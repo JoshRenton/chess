@@ -7,7 +7,7 @@ public class Coordinates {
         this.row = row;
     }
 
-    public char getColumn() {S
+    public char getColumn() {
         return this.column;
     }
 
