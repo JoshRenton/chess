@@ -1,6 +1,6 @@
 package pieces;
 
-import board.Board;
+import board.Square;
 
 public class Rook extends Piece {
 
@@ -8,7 +8,8 @@ public class Rook extends Piece {
         super(isWhite);
     }
 
-    public boolean canMove(Board board, ) {
-
+    public boolean canMove(Square startSquare, Square endSquare) {
+        return startSquare.getRow() == endSquare.getRow()
+                ^ startSquare.getColumn() == endSquare.getColumn();
     }
 }
