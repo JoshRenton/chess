@@ -20,7 +20,8 @@ public class Pawn extends Piece{
             return true;
         } else if (!endSquare.isOccupied()) {
             return false;
-        } else if (Math.abs(columnDiff) == 1 && rowDiff == 1 && endSquare.getPiece().isWhite() != this.isWhite()) { // Pawn can only move diagonally if capturing.
+        } else if (Math.abs(columnDiff) == 1 && rowDiff == 1
+                && endSquare.getPiece().isWhite() != this.isWhite()) { // Pawn can only move diagonally if capturing.
             return true;
         }
 
