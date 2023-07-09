@@ -1,24 +1,31 @@
 package board;
 
+import pieces.Piece;
+
 public class Board {
-    private static final Square[][] squares = initialiseSquares();
+    private Piece[][] board;
 
     public Board() {
-
+        initialiseBoard();
     }
 
-    private static Square[][] initialiseSquares() {
-        Square[][] squares = new Square[8][8];
-        for (int row = 0; row < 8; row++) {
-            for (int column = 0; column < 8; column++) {
-                Square square = new Square(row, column);
-                squares[row][column] = square;
-            }
-        }
-        return squares;
+    private void initialiseBoard() {
+        board = new Piece[8][8];
     }
 
-    public Square[][] getBoard() {
-        return squares;
+    public Piece[][] getBoard() {
+        return board;
+    }
+
+    public void setPiece(Piece piece, int row, int column) {
+        board[row][column] = piece;
+    }
+
+    public Piece getPiece(int row, int column) {
+        return board[row][column] != null ? board[row][column] : null;
+    }
+
+    public boolean isOccupied(int row, int column) {
+        return board[row][column] != null;
     }
 }
