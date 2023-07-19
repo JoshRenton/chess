@@ -12,4 +12,6 @@ public abstract class Piece {
     }
 
     public abstract boolean canMove(final int startRow, final int startColumn, final int endRow, final int endColumn);
+
+    public abstract char asChar();
 }

@@ -11,4 +11,8 @@ public class Queen extends Piece {
 
         return Math.abs(rowDiff) == Math.abs(columnDiff) || (startRow == endRow ^ startColumn == endColumn);
     }
+
+    public char asChar() {
+        return 'Q';
+    }
 }

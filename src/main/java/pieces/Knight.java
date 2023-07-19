@@ -12,4 +12,8 @@ public class Knight extends Piece {
         return Math.abs(absRowDiff) == 1 && Math.abs(absColumnDiff) == 2
                 || Math.abs(absRowDiff) == 2 && Math.abs(absColumnDiff) == 1;
     }
+
+    public char asChar() {
+        return 'N';
+    }
 }

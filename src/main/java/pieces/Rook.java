@@ -15,4 +15,8 @@ public class Rook extends Piece {
     public void setMoved() {
         hasMoved = true;
     }
+
+    public char asChar() {
+        return 'R';
+    }
 }

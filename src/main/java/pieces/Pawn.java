@@ -26,4 +26,8 @@ public class Pawn extends Piece{
     public void setMoved() {
         hasMoved = true;
     }
+
+    public char asChar() {
+        return 'P';
+    }
 }

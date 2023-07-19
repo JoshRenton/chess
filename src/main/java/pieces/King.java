@@ -17,4 +17,8 @@ public class King extends Piece {
     public void setMoved() {
         hasMoved = true;
     }
+
+    public char asChar() {
+        return 'K';
+    }
 }
