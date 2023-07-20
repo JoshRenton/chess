@@ -1,39 +1,38 @@
 import board.Board;
 import pieces.Pawn;
+import pieces.Piece;
+
+import java.util.Optional;
 
 public class GameEngine {
-    private Board board;
-    private int BOARD_SIZE = 8;
+    private static Board board;
+    private static final int BOARD_SIZE = 8;
 
     public GameEngine() {
 
     }
 
     public static void main(String[] args) {
-        System.out.println("Successfully run GameEngine.");
-    }
-
-    private void setupBoard() {
         board = new Board();
-        setupPawns();
+        printBoard();
     }
 
-    private void printBoard() {
+    private static void printBoard() {
         for (int row = BOARD_SIZE - 1; row >= 0; row--) {
             for (int column = 0; column < BOARD_SIZE; column++) {
-                System.out.println(board.getPiece(row, column).asChar());
+                Piece piece = board.getPiece(row, column);
+
+                if (piece != null) {
+                    System.out.print(piece.asChar());
+                } else {
+                    System.out.print('.');
+                }
+
+                if (column != BOARD_SIZE - 1) {
+                    System.out.print(' ');
+                }
             }
             System.out.println();
-        }
-    }
-
-    private void setupPawns() {
-        int whiteRow = 1;
-        int blackRow = 6;
-
-        for (int column = 0; column < BOARD_SIZE; column++) {
-            board.setPiece(new Pawn(true), whiteRow, column);
-            board.setPiece(new Pawn(false), blackRow, column);
         }
     }
 }
