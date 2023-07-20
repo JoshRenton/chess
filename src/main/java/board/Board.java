@@ -1,7 +1,8 @@
 package board;
 
-import pieces.Pawn;
-import pieces.Piece;
+import pieces.*;
+
+import java.util.stream.Stream;
 
 public class Board {
     private static final int BOARD_SIZE = 8;
@@ -18,6 +19,7 @@ public class Board {
 
     private void setupBoard() {
         setupPawns();
+        setupBackRow();
     }
 
     public Piece[][] getBoard() {
@@ -44,5 +46,30 @@ public class Board {
             setPiece(new Pawn(true), whiteRow, column);
             setPiece(new Pawn(false), blackRow, column);
         }
+    }
+
+    private void setupBackRow() {
+        Stream.of(true, false).forEach(isWhite -> {
+            int row;
+
+            if (isWhite) {
+                row = 0;
+            } else {
+                row = BOARD_SIZE - 1;
+            }
+
+            setPiece(new Rook(isWhite), row, 0);
+            setPiece(new Rook(isWhite), row, BOARD_SIZE - 1);
+
+            setPiece(new Knight(isWhite), row, 1);
+            setPiece(new Knight(isWhite), row, BOARD_SIZE - 2);
+
+            setPiece(new Bishop(isWhite), row, 2);
+            setPiece(new Bishop(isWhite), row, BOARD_SIZE - 3);
+
+            setPiece(new Queen(isWhite), row, 3);
+
+            setPiece(new King(isWhite), row, 4);
+        });
     }
 }
