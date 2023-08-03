@@ -1,20 +1,23 @@
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import pieces.Bishop;
+import utility.Move;
 
 public class BishopTest {
     private Bishop bishop;
     @Test
     public void canMoveSucceedsGivenCorrectCoordinates() {
         bishop = new Bishop(true);
-        boolean canMove = bishop.canMove(2,2,1, 3);
+        Move move = new Move(2, 2, 1, 3);
+        boolean canMove = bishop.canMove(move);
         assertThat(canMove).isTrue();
     }
 
     @Test
     public void canMoveFailsGivenIncorrectCoordinates() {
         bishop = new Bishop(true);
-        boolean canMove = bishop.canMove(2,2,5, 3);
+        Move move = new Move(2, 2, 5, 3);
+        boolean canMove = bishop.canMove(move);
         assertThat(canMove).isFalse();
     }
 }

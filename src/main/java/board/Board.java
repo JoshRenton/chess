@@ -30,6 +30,10 @@ public class Board {
         board[row][column] = piece;
     }
 
+    public void removePiece(int row, int column) {
+        setPiece(null, row, column);
+    }
+
     public Piece getPiece(int row, int column) {
         return board[row][column] != null ? board[row][column] : null;
     }

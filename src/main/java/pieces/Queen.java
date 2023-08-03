@@ -1,15 +1,18 @@
 package pieces;
 
+import utility.Move;
+
 public class Queen extends Piece {
     public Queen(boolean isWhite) {
         super(isWhite);
     }
 
-    public boolean canMove(final int startRow, final int startColumn, final int endRow, final int endColumn) {
-        int rowDiff = startRow - endRow;
-        int columnDiff = startColumn - endColumn;
+    public boolean canMove(Move move) {
+        int rowDiff = move.getStartRow() - move.getEndRow();
+        int columnDiff = move.getStartColumn() - move.getEndColumn();
 
-        return Math.abs(rowDiff) == Math.abs(columnDiff) || (startRow == endRow ^ startColumn == endColumn);
+        return Math.abs(rowDiff) == Math.abs(columnDiff) || (move.getStartRow() == move.getEndRow()
+                ^ move.getStartColumn() == move.getEndColumn());
     }
 
     public char asChar() {

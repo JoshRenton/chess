@@ -1,5 +1,7 @@
 package pieces;
 
+import utility.Move;
+
 public class Pawn extends Piece{
     private boolean hasMoved;
 
@@ -8,19 +10,20 @@ public class Pawn extends Piece{
         this.hasMoved = false;
     }
 
-    public boolean canMove(final int startRow, final int startColumn, final int endRow, final int endColumn) {
-        int rowDiff = endRow - startRow;
-        int columnDiff = endColumn - startColumn;
+    public boolean canMove(Move move) {
+        int rowDiff = move.getEndRow() - move.getStartRow();
+        int columnDiff = move.getEndColumn() - move.getStartColumn();
 
-        if (columnDiff == 0 && rowDiff == 1) { // Pawn moving forward one square.
+        if (columnDiff == 0 && rowDiff == 1 && isWhite()) { // Pawn moving forward one square.
             return true;
-        } else if (columnDiff == 0 && rowDiff == 2 && !hasMoved) { // First pawn move can be two squares.
+        } else if (columnDiff == 0 && rowDiff == 2 && isWhite() && !hasMoved) { // First pawn move can be two squares.
             return true;
-        }
+        } else if (columnDiff == 0 && rowDiff == -1 && !isWhite()) {
+            return true;
+        } else 
+            return columnDiff == 0 && rowDiff == -2 && !isWhite() && !hasMoved;
 
         // TODO: Capturing will have to be figured out externally for this.
-
-        return false;
     }
 
     public void setMoved() {

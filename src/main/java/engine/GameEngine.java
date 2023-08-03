@@ -2,18 +2,43 @@ package engine;
 
 import board.Board;
 import pieces.Piece;
+import utility.Move;
+
+import java.util.Scanner;
 
 public class GameEngine {
-    private static Board board;
     private static final int BOARD_SIZE = 8;
+    private static Board board;
+    private static Scanner scanner;
 
     public GameEngine() {
 
     }
 
     public static void main(String[] args) {
+        scanner = new Scanner(System.in);
         board = new Board();
-        printBoard();
+        gameLoop();
+    }
+
+    private static void gameLoop() {
+        boolean gameOver = false;
+        while (!gameOver) {
+            printBoard();
+            String moveInput = scanner.nextLine();
+            Move move = InputParser.parse(moveInput);
+            if (move != null) {
+                if (MoveValidator.isValid(board, move)) {
+                    doMove(move);
+                }
+            }
+        }
+    }
+
+    private static void doMove(Move move) {
+        Piece movingPiece = board.getPiece(move.getStartRow(), move.getStartColumn());
+        board.removePiece(move.getStartRow(), move.getStartColumn());
+        board.setPiece(movingPiece, move.getEndRow(), move.getEndColumn());
     }
 
     private static void printBoard() {
@@ -49,5 +74,7 @@ public class GameEngine {
             System.out.print(column);
             System.out.print(' ');
         }
+
+        System.out.println();
     }
 }

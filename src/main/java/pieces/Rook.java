@@ -1,5 +1,7 @@
 package pieces;
 
+import utility.Move;
+
 public class Rook extends Piece {
     boolean hasMoved;
 
@@ -8,8 +10,8 @@ public class Rook extends Piece {
         hasMoved = false;
     }
 
-    public boolean canMove(final int startRow, final int startColumn, final int endRow, final int endColumn) {
-        return startRow == endRow ^ startColumn == endColumn;
+    public boolean canMove(Move move) {
+        return move.getStartRow() == move.getEndRow() ^ move.getStartColumn() == move.getEndColumn();
     }
 
     public void setMoved() {
