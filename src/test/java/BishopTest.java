@@ -8,7 +8,7 @@ public class BishopTest {
     @Test
     public void canMoveSucceedsGivenCorrectCoordinates() {
         bishop = new Bishop(true);
-        Move move = new Move(2, 2, 1, 3);
+        Move move = new Move(true, 2, 2, 1, 3);
         boolean canMove = bishop.canMove(move);
         assertThat(canMove).isTrue();
     }
@@ -16,7 +16,7 @@ public class BishopTest {
     @Test
     public void canMoveFailsGivenIncorrectCoordinates() {
         bishop = new Bishop(true);
-        Move move = new Move(2, 2, 5, 3);
+        Move move = new Move(true, 2, 2, 5, 3);
         boolean canMove = bishop.canMove(move);
         assertThat(canMove).isFalse();
     }
