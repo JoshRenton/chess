@@ -20,7 +20,7 @@ public class Pawn extends Piece{
             return true;
         } else if (columnDiff == 0 && rowDiff == -1 && !isWhite()) {
             return true;
-        } else 
+        } else
             return columnDiff == 0 && rowDiff == -2 && !isWhite() && !hasMoved;
 
         // TODO: Capturing will have to be figured out externally for this.

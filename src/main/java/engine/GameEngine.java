@@ -23,13 +23,15 @@ public class GameEngine {
 
     private static void gameLoop() {
         boolean gameOver = false;
+        boolean isWhiteTurn = true;
         while (!gameOver) {
             printBoard();
             String moveInput = scanner.nextLine();
-            Move move = InputParser.parse(moveInput);
+            Move move = InputParser.parse(moveInput, isWhiteTurn);
             if (move != null) {
                 if (MoveValidator.isValid(board, move)) {
                     doMove(move);
+                    isWhiteTurn = !isWhiteTurn;
                 }
             }
         }

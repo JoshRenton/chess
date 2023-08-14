@@ -7,9 +7,9 @@ public class InputParser {
 
     }
 
-    public static Move parse(String input) {
+    public static Move parse(String input, boolean isWhiteTurn) {
         input = input.trim();
-        String[] splitInput = input.split(" ");
+        String[] splitInput = input.split(" "); //TODO: Currently does not work if multiple spaces between squares
         if (splitInput.length != 2) {
             return null;
         }
@@ -29,7 +29,7 @@ public class InputParser {
             int startRow = Integer.parseInt(String.valueOf(splitInput[0].charAt(1)));
             int endRow = Integer.parseInt(String.valueOf(splitInput[1].charAt(1)));
 
-            return new Move(startRow - 1, startColumn, endRow - 1, endColumn);
+            return new Move(isWhiteTurn, startRow - 1, startColumn, endRow - 1, endColumn);
         } catch (NumberFormatException e) {
             return null;
         }
