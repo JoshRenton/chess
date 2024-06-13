@@ -1,6 +1,6 @@
 package pieces;
 
-import board.Square;
+import utility.Move;
 
 public class Pawn extends Piece{
     private boolean hasMoved;
@@ -10,25 +10,27 @@ public class Pawn extends Piece{
         this.hasMoved = false;
     }
 
-    public boolean canMove(Square startSquare, Square endSquare) {
-        int rowDiff = endSquare.getRow() - startSquare.getRow();
-        int columnDiff = endSquare.getColumn() - startSquare.getColumn();
+    public boolean canMove(Move move) {
+        int rowDiff = move.getEndRow() - move.getStartRow();
+        int columnDiff = move.getEndColumn() - move.getStartColumn();
 
-        if (columnDiff == 0 && rowDiff == 1) { // Pawn moving forward one square.
+        if (columnDiff == 0 && rowDiff == 1 && isWhite()) { // Pawn moving forward one square.
             return true;
-        } else if (columnDiff == 0 && rowDiff == 2 && !hasMoved) { // First pawn move can be two squares.
+        } else if (columnDiff == 0 && rowDiff == 2 && isWhite() && !hasMoved) { // First pawn move can be two squares.
             return true;
-        } else if (!endSquare.isOccupied()) {
-            return false;
-        } else if (Math.abs(columnDiff) == 1 && rowDiff == 1
-                && endSquare.getPiece().isWhite() != this.isWhite()) { // Pawn can only move diagonally if capturing.
+        } else if (columnDiff == 0 && rowDiff == -1 && !isWhite()) {
             return true;
-        }
+        } else
+            return columnDiff == 0 && rowDiff == -2 && !isWhite() && !hasMoved;
 
-        return false;
+        // TODO: Capturing will have to be figured out externally for this.
     }
 
     public void setMoved() {
         hasMoved = true;
+    }
+
+    public char asChar() {
+        return 'P';
     }
 }

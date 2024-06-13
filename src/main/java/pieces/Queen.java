@@ -1,18 +1,21 @@
 package pieces;
 
-import board.Square;
+import utility.Move;
 
 public class Queen extends Piece {
     public Queen(boolean isWhite) {
         super(isWhite);
     }
 
-    public boolean canMove(Square startSquare, Square endSquare) {
-        int rowDiff = startSquare.getRow() - endSquare.getRow();
-        int columnDiff = startSquare.getColumn() - endSquare.getColumn();
+    public boolean canMove(Move move) {
+        int rowDiff = move.getStartRow() - move.getEndRow();
+        int columnDiff = move.getStartColumn() - move.getEndColumn();
 
-        return Math.abs(rowDiff) == Math.abs(columnDiff)
-                || (startSquare.getRow() == endSquare.getRow()
-                ^ startSquare.getColumn() == endSquare.getColumn());
+        return Math.abs(rowDiff) == Math.abs(columnDiff) || (move.getStartRow() == move.getEndRow()
+                ^ move.getStartColumn() == move.getEndColumn());
+    }
+
+    public char asChar() {
+        return 'Q';
     }
 }

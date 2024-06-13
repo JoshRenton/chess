@@ -1,6 +1,6 @@
 package pieces;
 
-import board.Square;
+import utility.Move;
 
 public class Rook extends Piece {
     boolean hasMoved;
@@ -10,12 +10,15 @@ public class Rook extends Piece {
         hasMoved = false;
     }
 
-    public boolean canMove(Square startSquare, Square endSquare) {
-        return startSquare.getRow() == endSquare.getRow()
-                ^ startSquare.getColumn() == endSquare.getColumn();
+    public boolean canMove(Move move) {
+        return move.getStartRow() == move.getEndRow() ^ move.getStartColumn() == move.getEndColumn();
     }
 
     public void setMoved() {
         hasMoved = true;
+    }
+
+    public char asChar() {
+        return 'R';
     }
 }

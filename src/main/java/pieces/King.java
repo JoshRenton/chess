@@ -1,6 +1,6 @@
 package pieces;
 
-import board.Square;
+import utility.Move;
 
 public class King extends Piece {
     boolean hasMoved;
@@ -9,14 +9,18 @@ public class King extends Piece {
         hasMoved = true;
     }
 
-    public boolean canMove(Square startSquare, Square endSquare) {
-        int rowDiff = startSquare.getRow() - endSquare.getRow();
-        int columnDiff = startSquare.getColumn() - endSquare.getColumn();
+    public boolean canMove(Move move) {
+        int rowDiff = move.getStartRow() - move.getEndRow();
+        int columnDiff = move.getStartColumn() - move.getEndColumn();
 
         return Math.abs(rowDiff) <= 1 && Math.abs(columnDiff) <= 1;
     }
 
     public void setMoved() {
         hasMoved = true;
+    }
+
+    public char asChar() {
+        return 'K';
     }
 }

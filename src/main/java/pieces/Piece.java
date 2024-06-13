@@ -1,5 +1,7 @@
 package pieces;
 
+import utility.Move;
+
 public abstract class Piece {
     private final boolean isWhite;
 
@@ -10,4 +12,8 @@ public abstract class Piece {
     public boolean isWhite() {
         return isWhite;
     }
+
+    public abstract boolean canMove(Move move);
+
+    public abstract char asChar();
 }

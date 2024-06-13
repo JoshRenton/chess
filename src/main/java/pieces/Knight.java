@@ -1,17 +1,21 @@
 package pieces;
 
-import board.Square;
+import utility.Move;
 
 public class Knight extends Piece {
     public Knight(boolean isWhite) {
         super(isWhite);
     }
 
-    public boolean canMove(Square startSquare, Square endSquare) {
-        int absRowDiff = Math.abs(startSquare.getRow() - endSquare.getRow());
-        int absColumnDiff = Math.abs(startSquare.getColumn() - endSquare.getColumn());
+    public boolean canMove(Move move) {
+        int absRowDiff = Math.abs(move.getStartRow() - move.getEndRow());
+        int absColumnDiff = Math.abs(move.getStartColumn() - move.getEndColumn());
 
-        return Math.abs(absRowDiff) == 1 && Math.abs(absColumnDiff) == 2
-                || Math.abs(absRowDiff) == 2 && Math.abs(absColumnDiff) == 1;
+        return absRowDiff == 1 && absColumnDiff == 2
+                || absRowDiff == 2 && absColumnDiff == 1;
+    }
+
+    public char asChar() {
+        return 'N';
     }
 }
