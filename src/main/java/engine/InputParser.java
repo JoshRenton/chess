@@ -37,25 +37,16 @@ public class InputParser {
 
     private static int convertColumnCharToInt(char columnChar) {
         int columnInt;
-        switch(columnChar) {
-            case 'a':
-                return 0;
-            case 'b':
-                return 1;
-            case 'c':
-                return 2;
-            case 'd':
-                return 3;
-            case 'e':
-                return 4;
-            case 'f':
-                return 5;
-            case 'g':
-                return 6;
-            case 'h':
-                return 7;
-            default:
-                return -1;
-        }
+        return switch (columnChar) {
+            case 'a' -> 0;
+            case 'b' -> 1;
+            case 'c' -> 2;
+            case 'd' -> 3;
+            case 'e' -> 4;
+            case 'f' -> 5;
+            case 'g' -> 6;
+            case 'h' -> 7;
+            default -> -1;
+        };
     }
 }

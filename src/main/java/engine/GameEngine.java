@@ -1,19 +1,15 @@
 package engine;
 
 import board.Board;
+import pieces.Pawn;
 import pieces.Piece;
 import utility.Move;
 
 import java.util.Scanner;
 
 public class GameEngine {
-    private static final int BOARD_SIZE = 8;
     private static Board board;
     private static Scanner scanner;
-
-    public GameEngine() {
-
-    }
 
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
@@ -41,13 +37,17 @@ public class GameEngine {
         Piece movingPiece = board.getPiece(move.getStartRow(), move.getStartColumn());
         board.removePiece(move.getStartRow(), move.getStartColumn());
         board.setPiece(movingPiece, move.getEndRow(), move.getEndColumn());
+        if (movingPiece instanceof Pawn) {
+            ((Pawn) movingPiece).setMoved();
+        }
     }
 
     private static void printBoard() {
-        for (int row = BOARD_SIZE - 1; row >= 0; row--) {
+        int boardSize = board.getBoardSize();
+        for (int row = boardSize - 1; row >= 0; row--) {
             System.out.print(row + 1);
             System.out.print(" | ");
-            for (int column = 0; column < BOARD_SIZE; column++) {
+            for (int column = 0; column < boardSize; column++) {
                 Piece piece = board.getPiece(row, column);
 
                 if (piece != null) {
@@ -56,7 +56,7 @@ public class GameEngine {
                     System.out.print('.');
                 }
 
-                if (column != BOARD_SIZE - 1) {
+                if (column != boardSize - 1) {
                     System.out.print(' ');
                 }
             }
@@ -64,13 +64,13 @@ public class GameEngine {
         }
 
         System.out.print("    ");
-        for (int column = 0; column < BOARD_SIZE; column++) {
+        for (int column = 0; column < boardSize; column++) {
             System.out.print('_');
             System.out.print(' ');
         }
         System.out.println();
 
-        // Prints column letters along the bottom of the board.
+        // Prints column letters along the bottom of the board
         System.out.print("    ");
         for (char column = 'a'; column <= 'h'; column++) {
             System.out.print(column);

@@ -26,6 +26,10 @@ public class Board {
         return board;
     }
 
+    public int getBoardSize() {
+        return BOARD_SIZE;
+    }
+
     public void setPiece(Piece piece, int row, int column) {
         board[row][column] = piece;
     }
@@ -35,7 +39,7 @@ public class Board {
     }
 
     public Piece getPiece(int row, int column) {
-        return board[row][column] != null ? board[row][column] : null;
+        return board[row][column] != null ? board[row][column] : new EmptyPiece();
     }
 
     public boolean isOccupied(int row, int column) {

@@ -14,11 +14,11 @@ public class MoveValidator {
     public static boolean isValid(Board board, Move move) {
         try {
             Piece piece = board.getPiece(move.getStartRow(), move.getStartColumn());
+            // Check that the moving piece is of the turn players colour
             if (piece.isWhite() != move.isWhiteTurn()) {
                 return false;
             }
-            boolean canMove = piece.canMove(move);
-            return canMove;
+            return piece.canMove(move);
         } catch (NullPointerException e) {
             return false;
         }
