@@ -14,7 +14,9 @@ public class GameEngine {
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
         board = new Board();
-        gameLoop();
+        BoardVisualiser boardVisualiser = new BoardVisualiser(board);
+        boardVisualiser.showWindow();
+//        gameLoop();
     }
 
     private static void gameLoop() {

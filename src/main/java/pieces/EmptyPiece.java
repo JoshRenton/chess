@@ -9,11 +9,11 @@ public class EmptyPiece extends Piece {
     }
 
     public boolean canMove(Move move) {
-        // Empty piece can never move
+        // Try as you might, empty piece shan't be moved
         return false;
     }
 
     public char asChar() {
-        return '.';
+        return ' ';
     }
 }
