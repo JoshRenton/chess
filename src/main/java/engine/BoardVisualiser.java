@@ -56,7 +56,7 @@ public final class BoardVisualiser {
 
         // Add squares in reverse order so that white is at the bottom.
         for (int row = boardGui.length - 1; row >= 0; row--) {
-            for (int column = boardGui[row].length - 1; column >= 0; column--) {
+            for (int column = 0; column < boardGui[row].length; column++) {
                 boardPanel.add(boardGui[row][column]);
             }
         }

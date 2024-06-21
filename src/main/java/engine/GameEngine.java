@@ -8,6 +8,7 @@ import utility.Square;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameEngine {
@@ -57,7 +58,8 @@ public class GameEngine {
             if (pieceSelected) {
                 attemptMove(coordinates);
                 pieceSelected = false;
-            } else {
+                //This prevents a click on a square with no piece from beginning a move
+            } else if (board.isOccupied(coordinates[0], coordinates[1])){
                 startingCoordinates = coordinates;
                 pieceSelected = true;
             }
