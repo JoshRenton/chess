@@ -5,17 +5,11 @@ public class Move {
     private final int startColumn;
     private final int endRow;
     private final int endColumn;
-    private final boolean isWhiteTurn;
-    public Move(final boolean isWhiteTurn, final int startRow, final int startColumn, final int endRow, final int endColumn) {
-        this.isWhiteTurn = isWhiteTurn;
+    public Move(final int startRow, final int startColumn, final int endRow, final int endColumn) {
         this.startRow = startRow;
         this.startColumn = startColumn;
         this.endRow = endRow;
         this.endColumn = endColumn;
-    }
-
-    public boolean isWhiteTurn() {
-        return isWhiteTurn;
     }
 
     public int getStartRow() {

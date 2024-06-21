@@ -18,7 +18,7 @@ public class Rook extends Piece {
         hasMoved = true;
     }
 
-    public char asChar() {
-        return 'R';
+    public String asString() {
+        return "R";
     }
 }

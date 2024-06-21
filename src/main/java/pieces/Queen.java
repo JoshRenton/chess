@@ -15,7 +15,7 @@ public class Queen extends Piece {
                 ^ move.getStartColumn() == move.getEndColumn());
     }
 
-    public char asChar() {
-        return 'Q';
+    public String asString() {
+        return "Q";
     }
 }

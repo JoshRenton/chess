@@ -13,7 +13,7 @@ public class EmptyPiece extends Piece {
         return false;
     }
 
-    public char asChar() {
-        return ' ';
+    public String asString() {
+        return " ";
     }
 }

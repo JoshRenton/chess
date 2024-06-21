@@ -4,34 +4,41 @@ import board.Board;
 import pieces.Pawn;
 import pieces.Piece;
 import utility.Move;
+import utility.Square;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
 
 public class GameEngine {
     private static Board board;
     private static Scanner scanner;
+    private static boolean isWhiteTurn;
+    private static int[] startingCoordinates;
+    private static boolean pieceSelected = false;
 
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
         board = new Board();
-        BoardVisualiser boardVisualiser = new BoardVisualiser(board);
-        boardVisualiser.showWindow();
-//        gameLoop();
+        BoardVisualiser.initialise(board);
+        BoardVisualiser.showWindow();
     }
 
-    private static void gameLoop() {
-        boolean gameOver = false;
-        boolean isWhiteTurn = true;
-        while (!gameOver) {
-            printBoard();
-            String moveInput = scanner.nextLine();
-            Move move = InputParser.parse(moveInput, isWhiteTurn);
-            if (move != null) {
-                if (MoveValidator.isValid(board, move)) {
-                    doMove(move);
-                    isWhiteTurn = !isWhiteTurn;
-                }
-            }
+    public static boolean isWhiteTurn() {
+        return isWhiteTurn;
+    }
+
+    private static void attemptMove(int[] endingCoordinates) {
+        Move move = new Move(startingCoordinates[0], startingCoordinates[1], endingCoordinates[0],
+                endingCoordinates[1]);
+        if (MoveValidator.isValid(board, move)) {
+            doMove(move);
+            // Update board interface
+            BoardVisualiser.updateButtonText(board.getPiece(startingCoordinates[0], startingCoordinates[1]).asString(),
+                    startingCoordinates);
+            BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates[0], endingCoordinates[1]).asString(),
+                    endingCoordinates);
+            isWhiteTurn = !isWhiteTurn;
         }
     }
 
@@ -44,41 +51,22 @@ public class GameEngine {
         }
     }
 
-    private static void printBoard() {
-        int boardSize = board.getBoardSize();
-        for (int row = boardSize - 1; row >= 0; row--) {
-            System.out.print(row + 1);
-            System.out.print(" | ");
-            for (int column = 0; column < boardSize; column++) {
-                Piece piece = board.getPiece(row, column);
-
-                if (piece != null) {
-                    System.out.print(piece.asChar());
-                } else {
-                    System.out.print('.');
-                }
-
-                if (column != boardSize - 1) {
-                    System.out.print(' ');
-                }
+    private static class SquareListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Square square = (Square) e.getSource();
+            int[] coordinates = square.getCoordinates();
+            if (pieceSelected) {
+                attemptMove(coordinates);
+                pieceSelected = false;
+            } else {
+                startingCoordinates = coordinates;
+                pieceSelected = true;
             }
-            System.out.println();
         }
+    }
 
-        System.out.print("    ");
-        for (int column = 0; column < boardSize; column++) {
-            System.out.print('_');
-            System.out.print(' ');
-        }
-        System.out.println();
-
-        // Prints column letters along the bottom of the board
-        System.out.print("    ");
-        for (char column = 'a'; column <= 'h'; column++) {
-            System.out.print(column);
-            System.out.print(' ');
-        }
-
-        System.out.println();
+    public static SquareListener getSquareListener() {
+        return new SquareListener();
     }
 }

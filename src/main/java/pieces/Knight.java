@@ -15,7 +15,7 @@ public class Knight extends Piece {
                 || absRowDiff == 2 && absColumnDiff == 1;
     }
 
-    public char asChar() {
-        return 'N';
+    public String asString() {
+        return "N";
     }
 }

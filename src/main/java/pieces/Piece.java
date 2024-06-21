@@ -15,5 +15,5 @@ public abstract class Piece {
 
     public abstract boolean canMove(Move move);
 
-    public abstract char asChar();
+    public abstract String asString();
 }

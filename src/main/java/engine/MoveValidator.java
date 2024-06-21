@@ -13,7 +13,7 @@ public final class MoveValidator {
         try {
             Piece piece = board.getPiece(move.getStartRow(), move.getStartColumn());
             // Check that the moving piece is of the turn players colour
-            if (piece.isWhite() != move.isWhiteTurn()) {
+            if (piece.isWhite() != GameEngine.isWhiteTurn()) {
                 return false;
             }
             return piece.canMove(move);

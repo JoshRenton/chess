@@ -30,7 +30,7 @@ public class Pawn extends Piece{
         hasMoved = true;
     }
 
-    public char asChar() {
-        return 'P';
+    public String asString() {
+        return "P";
     }
 }

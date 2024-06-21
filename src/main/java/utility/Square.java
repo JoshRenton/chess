@@ -8,10 +8,8 @@ import java.awt.*;
  */
 public class Square extends JButton {
     private final int[] coordinates;
-
     public Square(String text, int[] coordinates) {
         super(text);
-
         this.coordinates = coordinates;
 
         // Make squares have no border padding

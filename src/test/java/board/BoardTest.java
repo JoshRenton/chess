@@ -3,7 +3,6 @@ package board;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import pieces.EmptyPiece;
 import pieces.Piece;
 
 public class BoardTest {
@@ -21,13 +20,13 @@ public class BoardTest {
             for (int column = 0; column < boardSize - 1; column++) {
                 Piece piece = board.getPiece(row, column);
                 if (row == 0 || row == boardSize - 1) {
-                    assertThat(piece.asChar()).isEqualTo(backRow[column]);
+                    assertThat(piece.asString()).isEqualTo(backRow[column]);
                 }
                 else if (row == 1 || row == boardSize - 2) {
-                    assertThat(piece.asChar()).isEqualTo('P');
+                    assertThat(piece.asString()).isEqualTo('P');
                 }
                 else {
-                    assertThat(piece.asChar()).isEqualTo('.');
+                    assertThat(piece.asString()).isEqualTo('.');
                 }
             }
         }

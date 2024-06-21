@@ -20,7 +20,7 @@ public class King extends Piece {
         hasMoved = true;
     }
 
-    public char asChar() {
-        return 'K';
+    public String asString() {
+        return "K";
     }
 }
