@@ -6,7 +6,7 @@ import board.Board;
 import utility.Move;
 
 // TODO: Add validation for king moves.
-// TODO: Add validation for pawn captures.
+// TODO: Add validation for en passant.
 
 public final class MoveValidator {
 
@@ -25,6 +25,8 @@ public final class MoveValidator {
 
         rowDirection = normalizeDirection(rowDirection);
         columnDirection = normalizeDirection(columnDirection);
+
+        // The order of validation checks is extremely important to correct function
 
         if (isIncorrectTurn(piece.isWhite())) return false;
 
@@ -45,18 +47,37 @@ public final class MoveValidator {
 
         // Check for pawn capture
         if (piece.asString().equals("P") && !endPiece.asString().equals(" ")) {
-            if (isPawnCapture(piece.isWhite(), startRow, endRow, startColumn, endColumn)) {
+            if (isPawnCapture(startRow, endRow, startColumn, endColumn)) {
                 return true;
             }
+        }
+
+        // Check that pawn is not attempting to capture by moving forward
+        if (piece.asString().equals("P") && !endPiece.asString().equals(" ")) {
+            return false;
         }
 
         return piece.canMove(move);
     }
 
-    private static boolean isPawnCapture(boolean isWhite, int startRow, int endRow, int startColumn, int endColumn) {
-        if (isWhite && (endRow - startRow) == 1 && Math.abs(endColumn - startColumn) == 1) {
+    private static boolean isPawnCapture(int startRow, int endRow, int startColumn, int endColumn) {
+        if (GameEngine.isWhiteTurn() && (endRow - startRow) == 1 && Math.abs(endColumn - startColumn) == 1) {
             return true;
-        } else return !isWhite && (endRow - startRow) == -1 && Math.abs(endColumn - startColumn) == 1;
+        } else return !GameEngine.isWhiteTurn() && (endRow - startRow) == -1 && Math.abs(endColumn - startColumn) == 1;
+    }
+
+    private static boolean isEnPassant(Board board, int startRow, int endRow, int startColumn, int endColumn) {
+        // TODO: Currently using GameEngine.isWhiteTurn to avoid passing it as a parameter, but if the order of
+        // TODO: validation checks changes in the future, this could break so change at some point
+        if (GameEngine.isWhiteTurn() && startRow == 4 && Math.abs(endColumn - startColumn) == 1 &&
+                board.getPiece(startRow, endColumn).asString().equals("P")) {
+            return true;
+        } else if (!GameEngine.isWhiteTurn() && startRow == 3 && Math.abs(endColumn - startColumn) == 1 &&
+                board.getPiece(startRow, endColumn).asString().equals("P")) {
+            return true;
+        }
+
+        return false;
     }
 
     private static boolean isIncorrectTurn(Boolean isWhitePiece) {
