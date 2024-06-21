@@ -5,11 +5,9 @@ import board.Board;
 import pieces.Rook;
 import utility.Move;
 
-public class MoveValidator {
+public final class MoveValidator {
 
-    public MoveValidator() {
-
-    }
+    private MoveValidator() {}
 
     public static boolean isValid(Board board, Move move) {
         try {

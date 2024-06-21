@@ -47,7 +47,8 @@ public class BoardVisualiser {
                 color = Color.WHITE;
             }
             for (int column = 0; column < boardSize; column++) {
-                button = createSquare(color, String.valueOf(board.getPiece(row, column).asChar()));
+                button = createSquare(color, String.valueOf(board.getPiece(row, column).asChar()),
+                        new int[]{row, column});
                 color = swapColor(color);
 
                 boardPanel.add(button);
@@ -59,8 +60,8 @@ public class BoardVisualiser {
         return color == Color.WHITE ? Color.BLACK : Color.WHITE;
     }
 
-    private JButton createSquare(Color bg, String text) {
-        Square square = new Square(text);
+    private JButton createSquare(Color bg, String text, int[] coordinates) {
+        Square square = new Square(text, coordinates);
         square.setFont(new Font("Arial", Font.PLAIN, 40));
         square.setBorder(new LineBorder(Color.BLACK));
         square.setBackground(bg);
