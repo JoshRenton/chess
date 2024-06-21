@@ -12,13 +12,11 @@ import java.util.Scanner;
 
 public class GameEngine {
     private static Board board;
-    private static Scanner scanner;
     private static boolean isWhiteTurn = true;
     private static int[] startingCoordinates;
     private static boolean pieceSelected = false;
 
     public static void main(String[] args) {
-        scanner = new Scanner(System.in);
         board = new Board();
         BoardVisualiser.initialise(board);
         BoardVisualiser.showWindow();
