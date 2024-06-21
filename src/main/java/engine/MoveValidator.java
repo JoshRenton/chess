@@ -5,6 +5,9 @@ import pieces.Piece;
 import board.Board;
 import utility.Move;
 
+// TODO: Add validation for king moves.
+// TODO: Add validation for pawn captures.
+
 public final class MoveValidator {
 
     private MoveValidator() {}
@@ -40,7 +43,20 @@ public final class MoveValidator {
             return false;
         }
 
+        // Check for pawn capture
+        if (piece.asString().equals("P") && !endPiece.asString().equals(" ")) {
+            if (isPawnCapture(piece.isWhite(), startRow, endRow, startColumn, endColumn)) {
+                return true;
+            }
+        }
+
         return piece.canMove(move);
+    }
+
+    private static boolean isPawnCapture(boolean isWhite, int startRow, int endRow, int startColumn, int endColumn) {
+        if (isWhite && (endRow - startRow) == 1 && Math.abs(endColumn - startColumn) == 1) {
+            return true;
+        } else return !isWhite && (endRow - startRow) == -1 && Math.abs(endColumn - startColumn) == 1;
     }
 
     private static boolean isIncorrectTurn(Boolean isWhitePiece) {

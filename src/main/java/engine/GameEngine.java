@@ -58,8 +58,10 @@ public class GameEngine {
             if (pieceSelected) {
                 attemptMove(coordinates);
                 pieceSelected = false;
-                //This prevents a click on a square with no piece from beginning a move
-            } else if (board.isOccupied(coordinates[0], coordinates[1])){
+                // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
+                // is not of the turn player's colour
+            } else if (board.isOccupied(coordinates[0], coordinates[1]) && board.getPiece(coordinates[0],
+                    coordinates[1]).isWhite() == isWhiteTurn()){
                 startingCoordinates = coordinates;
                 pieceSelected = true;
             }
