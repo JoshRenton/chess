@@ -51,14 +51,25 @@ public final class BoardVisualiser {
                 color = swapColor(color);
 
                 boardGui[row][column] = square;
+            }
+        }
 
-                boardPanel.add(square);
+        // Add squares in reverse order so that white is at the bottom.
+        for (int row = boardGui.length - 1; row >= 0; row--) {
+            for (int column = boardGui[row].length - 1; column >= 0; column--) {
+                boardPanel.add(boardGui[row][column]);
             }
         }
     }
 
     public static void updateButtonText(String text, int[] coordinates) {
-        boardGui[coordinates[0]][coordinates[1]].setText(text);
+        Square square = boardGui[coordinates[0]][coordinates[1]];
+        square.setText(text);
+        if (GameEngine.isWhiteTurn()) {
+            square.setForeground(Color.RED);
+        } else {
+            square.setForeground(Color.BLUE);
+        }
     }
 
     private static Color swapColor(Color color) {
@@ -70,7 +81,11 @@ public final class BoardVisualiser {
         square.setFont(new Font("Arial", Font.PLAIN, 40));
         square.setBorder(new LineBorder(Color.BLACK));
         square.setBackground(bg);
-        square.setForeground(swapColor(bg));
+        if (coordinates[0] == 0 || coordinates[0] == 1) {
+            square.setForeground(Color.RED);
+        } else {
+            square.setForeground(Color.BLUE);
+        }
         return square;
     }
 }

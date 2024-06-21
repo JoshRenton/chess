@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class GameEngine {
     private static Board board;
     private static Scanner scanner;
-    private static boolean isWhiteTurn;
+    private static boolean isWhiteTurn = true;
     private static int[] startingCoordinates;
     private static boolean pieceSelected = false;
 
