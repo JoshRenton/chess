@@ -1,31 +1,36 @@
 package utility;
 
 public class Move {
-    private final int startRow;
-    private final int startColumn;
-    private final int endRow;
-    private final int endColumn;
-    public Move(final int startRow, final int startColumn, final int endRow, final int endColumn) {
-        this.startRow = startRow;
-        this.startColumn = startColumn;
-        this.endRow = endRow;
-        this.endColumn = endColumn;
+    private final Coordinate startCoordinates;
+    private final Coordinate endCoordinates;
+
+    public Move(final Coordinate startCoordinates, final Coordinate endCoordinates) {
+        this.startCoordinates = startCoordinates;
+        this.endCoordinates = endCoordinates;
+    }
+
+    public Coordinate getStartCoordinates() {
+        return startCoordinates;
+    }
+
+    public Coordinate getEndCoordinates() {
+        return endCoordinates;
     }
 
     public int getStartRow() {
-        return startRow;
+        return startCoordinates.getRow();
     }
 
     public int getStartColumn() {
-        return startColumn;
+        return startCoordinates.getColumn();
     }
 
     public int getEndRow() {
-        return endRow;
+        return endCoordinates.getRow();
     }
 
     public int getEndColumn() {
-        return endColumn;
+        return endCoordinates.getColumn();
     }
 }
 

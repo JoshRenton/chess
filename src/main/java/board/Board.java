@@ -1,6 +1,7 @@
 package board;
 
 import pieces.*;
+import utility.Coordinate;
 
 import java.util.stream.Stream;
 
@@ -30,20 +31,23 @@ public class Board {
         return BOARD_SIZE;
     }
 
-    public void setPiece(Piece piece, int row, int column) {
+    public void setPiece(Piece piece, Coordinate coordinates) {
+        int row = coordinates.getRow();
+        int column = coordinates.getColumn();
         board[row][column] = piece;
     }
 
-    public void removePiece(int row, int column) {
-        setPiece(null, row, column);
+    public void removePiece(Coordinate coordinates) {
+        setPiece(null, coordinates);
     }
 
-    public Piece getPiece(int row, int column) {
-        return board[row][column] != null ? board[row][column] : new EmptyPiece();
+    public Piece getPiece(Coordinate coordinates) {
+        return board[coordinates.getRow()][coordinates.getColumn()] != null ?
+                board[coordinates.getRow()][coordinates.getColumn()] : new EmptyPiece();
     }
 
-    public boolean isOccupied(int row, int column) {
-        return board[row][column] != null;
+    public boolean isOccupied(Coordinate coordinates) {
+        return board[coordinates.getRow()][coordinates.getColumn()] != null;
     }
 
     private void setupPawns() {
@@ -51,8 +55,8 @@ public class Board {
         int blackRow = 6;
 
         for (int column = 0; column < BOARD_SIZE; column++) {
-            setPiece(new Pawn(true), whiteRow, column);
-            setPiece(new Pawn(false), blackRow, column);
+            setPiece(new Pawn(true), new Coordinate(whiteRow, column));
+            setPiece(new Pawn(false), new Coordinate(blackRow, column));
         }
     }
 
@@ -66,18 +70,18 @@ public class Board {
                 row = BOARD_SIZE - 1;
             }
 
-            setPiece(new Rook(isWhite), row, 0);
-            setPiece(new Rook(isWhite), row, BOARD_SIZE - 1);
+            setPiece(new Rook(isWhite), new Coordinate(row, 0));
+            setPiece(new Rook(isWhite), new Coordinate(row, BOARD_SIZE - 1));
 
-            setPiece(new Knight(isWhite), row, 1);
-            setPiece(new Knight(isWhite), row, BOARD_SIZE - 2);
+            setPiece(new Knight(isWhite), new Coordinate(row, 1));
+            setPiece(new Knight(isWhite), new Coordinate(row, BOARD_SIZE - 2));
 
-            setPiece(new Bishop(isWhite), row, 2);
-            setPiece(new Bishop(isWhite), row, BOARD_SIZE - 3);
+            setPiece(new Bishop(isWhite), new Coordinate(row, 2));
+            setPiece(new Bishop(isWhite), new Coordinate(row, BOARD_SIZE - 3));
 
-            setPiece(new Queen(isWhite), row, 3);
+            setPiece(new Queen(isWhite), new Coordinate(row, 3));
 
-            setPiece(new King(isWhite), row, 4);
+            setPiece(new King(isWhite), new Coordinate(row, 4));
         });
     }
 }

@@ -3,6 +3,7 @@ package engine;
 import pieces.EmptyPiece;
 import pieces.Piece;
 import board.Board;
+import utility.Coordinate;
 import utility.Move;
 
 // TODO: Add validation for king moves.
@@ -13,7 +14,7 @@ public final class MoveValidator {
     private MoveValidator() {}
 
     public static boolean isValid(Board board, Move move) {
-        Piece piece = board.getPiece(move.getStartRow(), move.getStartColumn());
+        Piece piece = board.getPiece(move.getStartCoordinates());
         
         int startRow = move.getStartRow();
         int endRow = move.getEndRow();
@@ -40,7 +41,7 @@ public final class MoveValidator {
 
         // Check that if there is a piece at the end square, it is of the opposite colour
         // Also check that it is not the empty piece
-        Piece endPiece = board.getPiece(endRow, endColumn);
+        Piece endPiece = board.getPiece(move.getEndCoordinates());
         if (endPiece.isWhite() == piece.isWhite() && !endPiece.asString().equals(" ")) {
             return false;
         }
@@ -70,10 +71,10 @@ public final class MoveValidator {
         // TODO: Currently using GameEngine.isWhiteTurn to avoid passing it as a parameter, but if the order of
         // TODO: validation checks changes in the future, this could break so change at some point
         if (GameEngine.isWhiteTurn() && startRow == 4 && Math.abs(endColumn - startColumn) == 1 &&
-                board.getPiece(startRow, endColumn).asString().equals("P")) {
+                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P")) {
             return true;
         } else if (!GameEngine.isWhiteTurn() && startRow == 3 && Math.abs(endColumn - startColumn) == 1 &&
-                board.getPiece(startRow, endColumn).asString().equals("P")) {
+                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P")) {
             return true;
         }
 
@@ -91,7 +92,7 @@ public final class MoveValidator {
         int column = startColumn + columnDirection;
 
         while (row != endRow || column != endColumn) {
-            if (board.isOccupied(row, column)) {
+            if (board.isOccupied(new Coordinate(row, column))) {
                 return true;
             }
             row += rowDirection;

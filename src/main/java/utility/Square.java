@@ -7,8 +7,8 @@ import java.awt.*;
     Extends the JButton class to ensure that the button is square by default
  */
 public class Square extends JButton {
-    private final int[] coordinates;
-    public Square(String text, int[] coordinates) {
+    private final Coordinate coordinates;
+    public Square(String text, Coordinate coordinates) {
         super(text);
         this.coordinates = coordinates;
 
@@ -20,7 +20,7 @@ public class Square extends JButton {
         this.setBorderPainted(false);
     }
 
-    public int[] getCoordinates() {
+    public Coordinate getCoordinates() {
         return coordinates;
     }
 

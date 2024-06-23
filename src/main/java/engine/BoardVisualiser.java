@@ -1,5 +1,6 @@
 package engine;
 import board.Board;
+import utility.Coordinate;
 import utility.Square;
 
 import javax.swing.*;
@@ -46,7 +47,7 @@ public final class BoardVisualiser {
                 color = Color.WHITE;
             }
             for (int column = 0; column < boardSize; column++) {
-                Square square = createSquare(color, board.getPiece(row, column).asString(), new int[]{row, column});
+                Square square = createSquare(color, board.getPiece(new Coordinate(row, column)).asString(), new Coordinate(row, column));
                 square.addActionListener(GameEngine.getSquareListener());
                 color = swapColor(color);
 
@@ -62,8 +63,8 @@ public final class BoardVisualiser {
         }
     }
 
-    public static void updateButtonText(String text, int[] coordinates) {
-        Square square = boardGui[coordinates[0]][coordinates[1]];
+    public static void updateButtonText(String text, Coordinate coordinates) {
+        Square square = boardGui[coordinates.getRow()][coordinates.getColumn()];
         square.setText(text);
         if (GameEngine.isWhiteTurn()) {
             square.setForeground(Color.RED);
@@ -76,12 +77,12 @@ public final class BoardVisualiser {
         return color == Color.WHITE ? Color.BLACK : Color.WHITE;
     }
 
-    private static Square createSquare(Color bg, String text, int[] coordinates) {
+    private static Square createSquare(Color bg, String text, Coordinate coordinates) {
         Square square = new Square(text, coordinates);
         square.setFont(new Font("Arial", Font.PLAIN, 40));
         square.setBorder(new LineBorder(Color.BLACK));
         square.setBackground(bg);
-        if (coordinates[0] == 0 || coordinates[0] == 1) {
+        if (coordinates.getRow() == 0 || coordinates.getRow() == 1) {
             square.setForeground(Color.RED);
         } else {
             square.setForeground(Color.BLUE);

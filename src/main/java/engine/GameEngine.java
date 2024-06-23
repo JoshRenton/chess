@@ -3,6 +3,7 @@ package engine;
 import board.Board;
 import pieces.Pawn;
 import pieces.Piece;
+import utility.Coordinate;
 import utility.Move;
 import utility.Square;
 
@@ -14,10 +15,10 @@ import java.util.Scanner;
 public class GameEngine {
     private static Board board;
     private static boolean isWhiteTurn = true;
-    private static int[] startingCoordinates;
+    private static Coordinate startingCoordinates;
     private static boolean pieceSelected = false;
-    private static int[] blackKingPos;
-    private static int[] whiteKingPos;
+    private static Coordinate blackKingPos;
+    private static Coordinate whiteKingPos;
 
     public static void main(String[] args) {
         board = new Board();
@@ -29,15 +30,14 @@ public class GameEngine {
         return isWhiteTurn;
     }
 
-    private static void attemptMove(int[] endingCoordinates) {
-        Move move = new Move(startingCoordinates[0], startingCoordinates[1], endingCoordinates[0],
-                endingCoordinates[1]);
+    private static void attemptMove(Coordinate endingCoordinates) {
+        Move move = new Move(startingCoordinates, endingCoordinates);
         if (MoveValidator.isValid(board, move)) {
             doMove(move);
             // Update board interface
-            BoardVisualiser.updateButtonText(board.getPiece(startingCoordinates[0], startingCoordinates[1]).asString(),
+            BoardVisualiser.updateButtonText(board.getPiece(startingCoordinates).asString(),
                     startingCoordinates);
-            BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates[0], endingCoordinates[1]).asString(),
+            BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates).asString(),
                     endingCoordinates);
             // Swap player turn
             isWhiteTurn = !isWhiteTurn;
@@ -45,35 +45,35 @@ public class GameEngine {
     }
 
     private static void doMove(Move move) {
-        Piece movingPiece = board.getPiece(move.getStartRow(), move.getStartColumn());
-        board.removePiece(move.getStartRow(), move.getStartColumn());
-        board.setPiece(movingPiece, move.getEndRow(), move.getEndColumn());
+        Piece movingPiece = board.getPiece(move.getStartCoordinates());
+        board.removePiece(move.getStartCoordinates());
+        board.setPiece(movingPiece, move.getEndCoordinates());
 
         if (movingPiece.asString().equals("P")) {
             ((Pawn) movingPiece).setMoved();
         } else if (movingPiece.asString().equals("K")) {
             // Update king position
             if (movingPiece.isWhite()) {
-                setWhiteKingPos(move.getEndRow(), move.getEndColumn());
+                setWhiteKingPos(move.getEndCoordinates());
             } else {
-                setBlackKingPos(move.getEndRow(), move.getEndColumn());
+                setBlackKingPos(move.getEndCoordinates());
             }
         }
     }
 
-    private static void setBlackKingPos(int row, int column) {
-        blackKingPos = new int[]{row, column};
+    private static void setBlackKingPos(Coordinate coordinates) {
+        blackKingPos = coordinates;
     }
 
-    private static void setWhiteKingPos(int row, int column) {
-        whiteKingPos = new int[]{row, column};
+    private static void setWhiteKingPos(Coordinate coordinates) {
+        whiteKingPos = coordinates;
     }
 
-    public int[] getBlackKingPos() {
+    public Coordinate getBlackKingPos() {
         return blackKingPos;
     }
 
-    public int[] getWhiteKingPos() {
+    public Coordinate getWhiteKingPos() {
         return whiteKingPos;
     }
 
@@ -81,15 +81,14 @@ public class GameEngine {
         @Override
         public void actionPerformed(ActionEvent e) {
             Square square = (Square) e.getSource();
-            int[] coordinates = square.getCoordinates();
+            Coordinate coordinate = square.getCoordinates();
             if (pieceSelected) {
-                attemptMove(coordinates);
+                attemptMove(coordinate);
                 pieceSelected = false;
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
-            } else if (board.isOccupied(coordinates[0], coordinates[1]) && board.getPiece(coordinates[0],
-                    coordinates[1]).isWhite() == isWhiteTurn()){
-                startingCoordinates = coordinates;
+            } else if (board.isOccupied(coordinate) && board.getPiece(coordinate).isWhite() == isWhiteTurn()){
+                startingCoordinates = coordinate;
                 pieceSelected = true;
             }
         }
