@@ -16,6 +16,8 @@ public class GameEngine {
     private static boolean isWhiteTurn = true;
     private static int[] startingCoordinates;
     private static boolean pieceSelected = false;
+    private static int[] blackKingPos;
+    private static int[] whiteKingPos;
 
     public static void main(String[] args) {
         board = new Board();
@@ -37,6 +39,7 @@ public class GameEngine {
                     startingCoordinates);
             BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates[0], endingCoordinates[1]).asString(),
                     endingCoordinates);
+            // Swap player turn
             isWhiteTurn = !isWhiteTurn;
         }
     }
@@ -45,9 +48,33 @@ public class GameEngine {
         Piece movingPiece = board.getPiece(move.getStartRow(), move.getStartColumn());
         board.removePiece(move.getStartRow(), move.getStartColumn());
         board.setPiece(movingPiece, move.getEndRow(), move.getEndColumn());
-        if (movingPiece instanceof Pawn) {
+
+        if (movingPiece.asString().equals("P")) {
             ((Pawn) movingPiece).setMoved();
+        } else if (movingPiece.asString().equals("K")) {
+            // Update king position
+            if (movingPiece.isWhite()) {
+                setWhiteKingPos(move.getEndRow(), move.getEndColumn());
+            } else {
+                setBlackKingPos(move.getEndRow(), move.getEndColumn());
+            }
         }
+    }
+
+    private static void setBlackKingPos(int row, int column) {
+        blackKingPos = new int[]{row, column};
+    }
+
+    private static void setWhiteKingPos(int row, int column) {
+        whiteKingPos = new int[]{row, column};
+    }
+
+    public int[] getBlackKingPos() {
+        return blackKingPos;
+    }
+
+    public int[] getWhiteKingPos() {
+        return whiteKingPos;
     }
 
     private static class SquareListener implements ActionListener {
@@ -68,6 +95,7 @@ public class GameEngine {
         }
     }
 
+    // TODO: Maybe this should be returning a single instance instead of a new listener each time
     public static SquareListener getSquareListener() {
         return new SquareListener();
     }
