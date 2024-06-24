@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class GameEngine {
     private static Board board;
@@ -23,6 +24,8 @@ public class GameEngine {
 
     public static void main(String[] args) {
         inCheck = false;
+        whiteKingPos = new Coordinate(0, 4);
+        blackKingPos = new Coordinate(7, 4);
         board = new Board();
         BoardVisualiser.initialise(board);
         BoardVisualiser.showWindow();
@@ -32,12 +35,10 @@ public class GameEngine {
         return isWhiteTurn;
     }
 
-    public static boolean isInCheck() {
-        return isInCheck();
-    }
-
-    private static void attemptMove(Coordinate endingCoordinates) {
+    private static void playerAction(Coordinate endingCoordinates) {
         Move move = new Move(startingCoordinates, endingCoordinates);
+
+        // Check move is valid before doing move
         if (MoveValidator.isValid(board, move)) {
             doMove(move);
             // Update board interface
@@ -45,6 +46,13 @@ public class GameEngine {
                     startingCoordinates);
             BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates).asString(),
                     endingCoordinates);
+
+            inCheck = isInCheck();
+
+            if (inCheck) {
+                System.exit(0);
+            }
+
             // Swap player turn
             isWhiteTurn = !isWhiteTurn;
         }
@@ -65,21 +73,6 @@ public class GameEngine {
                 blackKingPos = move.getEndCoordinates();
             }
         }
-
-        // Check if moving piece puts opposing king in check
-        Coordinate kingPos;
-
-        if (isWhiteTurn) {
-            kingPos = blackKingPos;
-        } else {
-            kingPos = whiteKingPos;
-        }
-
-        Move toOpposingKing = new Move(move.getEndCoordinates(), kingPos);
-
-        if (movingPiece.canMove(toOpposingKing)) {
-            inCheck = true;
-        }
     }
 
     public Coordinate getBlackKingPos() {
@@ -90,14 +83,44 @@ public class GameEngine {
         return whiteKingPos;
     }
 
+    // Returns true if a player is in check
+    private static boolean isInCheck() {
+        Coordinate kingPos;
+        Piece[][] pieces = board.getBoard();
+
+        if (!isWhiteTurn) {
+            kingPos = whiteKingPos;
+        } else {
+            kingPos = blackKingPos;
+        }
+
+        for (int row = 0; row < pieces.length; row++) {
+            for (int column = 0; column < pieces[row].length; column++) {
+                Coordinate start = new Coordinate(row, column);
+                Piece piece = board.getPiece(start);
+                // Check piece is of opposite colour and not empty
+                if (!piece.asString().equals(" ") && piece.isWhite() == isWhiteTurn) {
+                    Move move = new Move(start, kingPos);
+                    if (MoveValidator.isValid(board, move)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Listens for interaction with a square
     private static class SquareListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             Square square = (Square) e.getSource();
             Coordinate coordinate = square.getCoordinates();
             if (pieceSelected) {
-                attemptMove(coordinate);
+                playerAction(coordinate);
                 pieceSelected = false;
+
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
             } else if (board.isOccupied(coordinate) && board.getPiece(coordinate).isWhite() == isWhiteTurn()){

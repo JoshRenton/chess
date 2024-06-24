@@ -1,10 +1,11 @@
 package engine;
 
-import pieces.EmptyPiece;
 import pieces.Piece;
 import board.Board;
 import utility.Coordinate;
 import utility.Move;
+
+import static engine.GameEngine.*;
 
 // TODO: Add validation for king moves.
 // TODO: Add validation for en passant.
@@ -13,93 +14,82 @@ public final class MoveValidator {
 
     private MoveValidator() {}
 
+    // TODO: Reverse logic so moves are denied by default
     public static boolean isValid(Board board, Move move) {
         Piece piece = board.getPiece(move.getStartCoordinates());
-        
-        int startRow = move.getStartRow();
-        int endRow = move.getEndRow();
-        int startColumn = move.getStartColumn();
-        int endColumn = move.getEndColumn();
 
-        int rowDirection = endRow - startRow;
-        int columnDirection = endColumn - startColumn;
+        Coordinate startCoordinate = new Coordinate(move.getStartRow(), move.getStartColumn());
+        Coordinate endCoordinate = new Coordinate(move.getEndRow(), move.getEndColumn());
 
-        rowDirection = normalizeDirection(rowDirection);
-        columnDirection = normalizeDirection(columnDirection);
-
-        // The order of validation checks is extremely important to correct function
-
-        if (isIncorrectTurn(piece.isWhite())) return false;
-
-        // Check that there is no piece in between the start and end square
-        // Ignore this check for knights
-        if (!piece.asString().equals("N")) {
-            if (pathIsObstructed(board, startRow, endRow, startColumn, endColumn, rowDirection, columnDirection)) {
-                return false;
-            }
-        }
-
-        // Check that if there is a piece at the end square, it is of the opposite colour
-        // Also check that it is not the empty piece
         Piece endPiece = board.getPiece(move.getEndCoordinates());
-        if (endPiece.isWhite() == piece.isWhite() && !endPiece.asString().equals(" ")) {
-            return false;
-        }
 
-        // Check for pawn capture
-        if (piece.asString().equals("P") && !endPiece.asString().equals(" ")) {
-            if (isPawnCapture(startRow, endRow, startColumn, endColumn)) {
-                return true;
+        if (isCorrectTurn(piece.isWhite())) {
+            // Deal with pawn special rules
+            if (piece.asString().equals("P")) {
+                return (piece.canMove(move) && isValidPawnMove(board, startCoordinate, endCoordinate)) ||
+                        (isOppositeColourPiece(piece, endPiece) && isPawnCapture(startCoordinate, endCoordinate));
+            } else if (piece.canMove(move)) {
+                if (endPiece.asString().equals(" ") || isOppositeColourPiece(piece, endPiece)) {
+                    if (piece.asString().equals("N")) {
+                        return true;
+                    } else {
+                        return pathIsUnobstructed(board, startCoordinate, endCoordinate);
+                    }
+                }
             }
         }
 
-        // Check that pawn is not attempting to capture by moving forward
-        if (piece.asString().equals("P") && !endPiece.asString().equals(" ")) {
-            return false;
-        }
-
-        return piece.canMove(move);
+        return false;
     }
 
-    private static boolean isPawnCapture(int startRow, int endRow, int startColumn, int endColumn) {
-        if (GameEngine.isWhiteTurn() && (endRow - startRow) == 1 && Math.abs(endColumn - startColumn) == 1) {
+    private static boolean isValidPawnMove(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
+        return pathIsUnobstructed(board, startCoordinate, endCoordinate) &&
+                board.getPiece(endCoordinate).asString().equals(" ");
+    }
+
+    private static boolean isPawnCapture(Coordinate startCoordinate, Coordinate endCoordinate) {
+        if (isWhiteTurn() && ((endCoordinate.getRow() - startCoordinate.getRow()) == 1) &&
+                (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1)) {
             return true;
-        } else return !GameEngine.isWhiteTurn() && (endRow - startRow) == -1 && Math.abs(endColumn - startColumn) == 1;
+        } else return !isWhiteTurn() && ((endCoordinate.getRow() - startCoordinate.getRow()) == -1) &&
+                (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1);
     }
 
     private static boolean isEnPassant(Board board, int startRow, int endRow, int startColumn, int endColumn) {
         // TODO: Currently using GameEngine.isWhiteTurn to avoid passing it as a parameter, but if the order of
         // TODO: validation checks changes in the future, this could break so change at some point
-        if (GameEngine.isWhiteTurn() && startRow == 4 && Math.abs(endColumn - startColumn) == 1 &&
+        if (isWhiteTurn() && startRow == 4 && Math.abs(endColumn - startColumn) == 1 &&
                 board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P")) {
             return true;
-        } else if (!GameEngine.isWhiteTurn() && startRow == 3 && Math.abs(endColumn - startColumn) == 1 &&
-                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P")) {
-            return true;
-        }
-
-        return false;
+        } else return !isWhiteTurn() && startRow == 3 && Math.abs(endColumn - startColumn) == 1 &&
+                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P");
     }
 
-    private static boolean isIncorrectTurn(Boolean isWhitePiece) {
+    private static boolean isCorrectTurn(Boolean isWhitePiece) {
         // Check that the moving piece is of the turn players colour
-        return isWhitePiece != GameEngine.isWhiteTurn();
+        return isWhitePiece == isWhiteTurn();
     }
 
-    private static boolean pathIsObstructed(Board board, int startRow, int endRow, int startColumn, int endColumn,
-                                               int rowDirection, int columnDirection) {
-        int row = startRow + rowDirection;
-        int column = startColumn + columnDirection;
+    // Returns true if path is unobstructed
+    private static boolean pathIsUnobstructed(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
+        int rowDirection = endCoordinate.getRow() - startCoordinate.getRow();
+        int columnDirection = endCoordinate.getColumn() - startCoordinate.getColumn();
 
-        while (row != endRow || column != endColumn) {
+        rowDirection = normalizeDirection(rowDirection);
+        columnDirection = normalizeDirection(columnDirection);
+
+        int row = startCoordinate.getRow() + rowDirection;
+        int column = startCoordinate.getColumn() + columnDirection;
+
+        while (row != endCoordinate.getRow() || column != endCoordinate.getColumn()) {
             if (board.isOccupied(new Coordinate(row, column))) {
-                return true;
+                return false;
             }
             row += rowDirection;
             column += columnDirection;
         }
 
-        return false;
+        return true;
     }
 
     private static int normalizeDirection(int direction) {
@@ -110,5 +100,9 @@ public final class MoveValidator {
         }
 
         return direction;
+    }
+
+    private static boolean isOppositeColourPiece(Piece piece, Piece endPiece) {
+        return !endPiece.asString().equals(" ") && piece.isWhite() != endPiece.isWhite();
     }
 }
