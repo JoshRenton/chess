@@ -19,8 +19,10 @@ public class GameEngine {
     private static boolean pieceSelected = false;
     private static Coordinate blackKingPos;
     private static Coordinate whiteKingPos;
+    private static boolean inCheck;
 
     public static void main(String[] args) {
+        inCheck = false;
         board = new Board();
         BoardVisualiser.initialise(board);
         BoardVisualiser.showWindow();
@@ -28,6 +30,10 @@ public class GameEngine {
 
     public static boolean isWhiteTurn() {
         return isWhiteTurn;
+    }
+
+    public static boolean isInCheck() {
+        return isInCheck();
     }
 
     private static void attemptMove(Coordinate endingCoordinates) {
@@ -54,19 +60,26 @@ public class GameEngine {
         } else if (movingPiece.asString().equals("K")) {
             // Update king position
             if (movingPiece.isWhite()) {
-                setWhiteKingPos(move.getEndCoordinates());
+                whiteKingPos = move.getEndCoordinates();
             } else {
-                setBlackKingPos(move.getEndCoordinates());
+                blackKingPos = move.getEndCoordinates();
             }
         }
-    }
 
-    private static void setBlackKingPos(Coordinate coordinates) {
-        blackKingPos = coordinates;
-    }
+        // Check if moving piece puts opposing king in check
+        Coordinate kingPos;
 
-    private static void setWhiteKingPos(Coordinate coordinates) {
-        whiteKingPos = coordinates;
+        if (isWhiteTurn) {
+            kingPos = blackKingPos;
+        } else {
+            kingPos = whiteKingPos;
+        }
+
+        Move toOpposingKing = new Move(move.getEndCoordinates(), kingPos);
+
+        if (movingPiece.canMove(toOpposingKing)) {
+            inCheck = true;
+        }
     }
 
     public Coordinate getBlackKingPos() {
