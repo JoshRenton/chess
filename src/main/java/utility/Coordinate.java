@@ -1,7 +1,7 @@
 package utility;
 
 public class Coordinate {
-    private int[] coordinate;
+    private final int[] coordinate;
 
     public Coordinate(int row, int column) {
         coordinate = new int[]{row, column};

@@ -9,14 +9,11 @@ import utility.Square;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.stream.Stream;
 
 public class GameEngine {
     private static Board board;
     private static boolean isWhiteTurn = true;
-    private static Coordinate startingCoordinates;
+    private static Coordinate startCoordinate;
     private static boolean pieceSelected = false;
     private static Coordinate blackKingPos;
     private static Coordinate whiteKingPos;
@@ -24,6 +21,7 @@ public class GameEngine {
 
     public static void main(String[] args) {
         inCheck = false;
+        // TODO: Consider having these be set at board creation instead of hard-coded values
         whiteKingPos = new Coordinate(0, 4);
         blackKingPos = new Coordinate(7, 4);
         board = new Board();
@@ -36,22 +34,15 @@ public class GameEngine {
     }
 
     private static void playerAction(Coordinate endingCoordinates) {
-        Move move = new Move(startingCoordinates, endingCoordinates);
+        Move move = new Move(startCoordinate, endingCoordinates);
 
         // Check move is valid before doing move
         if (MoveValidator.isValid(board, move)) {
             doMove(move);
             // Update board interface
-            BoardVisualiser.updateButtonText(board.getPiece(startingCoordinates).asString(),
-                    startingCoordinates);
-            BoardVisualiser.updateButtonText(board.getPiece(endingCoordinates).asString(),
-                    endingCoordinates);
+            visualiseMove(move);
 
             inCheck = isInCheck();
-
-            if (inCheck) {
-                System.exit(0);
-            }
 
             // Swap player turn
             isWhiteTurn = !isWhiteTurn;
@@ -59,20 +50,30 @@ public class GameEngine {
     }
 
     private static void doMove(Move move) {
-        Piece movingPiece = board.getPiece(move.getStartCoordinates());
-        board.removePiece(move.getStartCoordinates());
-        board.setPiece(movingPiece, move.getEndCoordinates());
+        Piece movingPiece = board.getPiece(move.getStartCoordinate());
+        board.removePiece(move.getStartCoordinate());
+        board.setPiece(movingPiece, move.getEndCoordinate());
 
         if (movingPiece.asString().equals("P")) {
             ((Pawn) movingPiece).setMoved();
         } else if (movingPiece.asString().equals("K")) {
             // Update king position
             if (movingPiece.isWhite()) {
-                whiteKingPos = move.getEndCoordinates();
+                whiteKingPos = move.getEndCoordinate();
             } else {
-                blackKingPos = move.getEndCoordinates();
+                blackKingPos = move.getEndCoordinate();
             }
         }
+    }
+
+    private static void visualiseMove(Move move) {
+        Coordinate startCoordinate = move.getStartCoordinate();
+        Coordinate endCoordinate = move.getEndCoordinate();
+
+        BoardVisualiser.updateButtonText(board.getPiece(startCoordinate).asString(),
+                startCoordinate);
+        BoardVisualiser.updateButtonText(board.getPiece(endCoordinate).asString(),
+                endCoordinate);
     }
 
     public Coordinate getBlackKingPos() {
@@ -84,6 +85,8 @@ public class GameEngine {
     }
 
     // Returns true if a player is in check
+    // TODO: A piece moving will never result in a discovered check by a pawn or knight
+    // TODO: Therefore, can check the moving piece and also for rooks, bishops and queens (king cannot directly check)
     private static boolean isInCheck() {
         Coordinate kingPos;
         Piece[][] pieces = board.getBoard();
@@ -124,7 +127,7 @@ public class GameEngine {
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
             } else if (board.isOccupied(coordinate) && board.getPiece(coordinate).isWhite() == isWhiteTurn()){
-                startingCoordinates = coordinate;
+                startCoordinate = coordinate;
                 pieceSelected = true;
             }
         }

@@ -1,36 +1,36 @@
 package utility;
 
 public class Move {
-    private final Coordinate startCoordinates;
-    private final Coordinate endCoordinates;
+    private final Coordinate startCoordinate;
+    private final Coordinate endCoordinate;
 
-    public Move(final Coordinate startCoordinates, final Coordinate endCoordinates) {
-        this.startCoordinates = startCoordinates;
-        this.endCoordinates = endCoordinates;
+    public Move(final Coordinate startCoordinate, final Coordinate endCoordinate) {
+        this.startCoordinate = startCoordinate;
+        this.endCoordinate = endCoordinate;
     }
 
-    public Coordinate getStartCoordinates() {
-        return startCoordinates;
+    public Coordinate getStartCoordinate() {
+        return startCoordinate;
     }
 
-    public Coordinate getEndCoordinates() {
-        return endCoordinates;
+    public Coordinate getEndCoordinate() {
+        return endCoordinate;
     }
 
     public int getStartRow() {
-        return startCoordinates.getRow();
+        return startCoordinate.getRow();
     }
 
     public int getStartColumn() {
-        return startCoordinates.getColumn();
+        return startCoordinate.getColumn();
     }
 
     public int getEndRow() {
-        return endCoordinates.getRow();
+        return endCoordinate.getRow();
     }
 
     public int getEndColumn() {
-        return endCoordinates.getColumn();
+        return endCoordinate.getColumn();
     }
 }
 
