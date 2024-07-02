@@ -8,7 +8,6 @@ import utility.Move;
 import static engine.GameEngine.*;
 
 // TODO: Add validation for king moves.
-// TODO: Add validation for en passant.
 
 public final class MoveValidator {
 
@@ -22,30 +21,28 @@ public final class MoveValidator {
 
         Piece endPiece = board.getPiece(move.getEndCoordinate());
 
-        if (isCorrectTurn(piece.isWhite())) {
-            // Deal with pawn special rules
-            if (piece.asString().equals("P")) {
-                if (piece.canMove(move)) {
-                    if (isValidPawnMove(board, startCoordinate, endCoordinate)) {
-                        return MoveStatus.VALID;
-                    } else {
-                        return MoveStatus.INVALID;
-                    }
+        // Deal with pawn special rules
+        if (piece.asString().equals("P")) {
+            if (piece.canMove(move)) {
+                if (isValidPawnMove(board, startCoordinate, endCoordinate)) {
+                    return MoveStatus.VALID;
                 } else {
-                    if (isPawnCapture(startCoordinate, endCoordinate) && !endPiece.asString().equals(" ")) {
-                        return MoveStatus.VALID;
-                    } else if (isEnPassant(board, startCoordinate, endCoordinate)) {
-                        return MoveStatus.EN_PASSANT;
-                    }
+                    return MoveStatus.INVALID;
                 }
-            } else if (piece.canMove(move)) {
-                if (endPiece.asString().equals(" ") || isOppositeColourPiece(piece, endPiece)) {
-                    // Knights can ignore obstructions
-                    if (piece.asString().equals("N")) {
-                        return MoveStatus.VALID;
-                    } else if (pathIsUnobstructed(board, startCoordinate, endCoordinate)) {
-                        return MoveStatus.VALID;
-                    }
+            } else {
+                if (isPawnCapture(startCoordinate, endCoordinate) && !endPiece.asString().equals(" ")) {
+                    return MoveStatus.VALID;
+                } else if (isEnPassant(board, startCoordinate, endCoordinate)) {
+                    return MoveStatus.EN_PASSANT;
+                }
+            }
+        } else if (piece.canMove(move)) {
+            if (endPiece.asString().equals(" ") || isOppositeColourPiece(piece, endPiece)) {
+                // Knights can ignore obstructions
+                if (piece.asString().equals("N")) {
+                    return MoveStatus.VALID;
+                } else if (pathIsUnobstructed(board, startCoordinate, endCoordinate)) {
+                    return MoveStatus.VALID;
                 }
             }
         }

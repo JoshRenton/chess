@@ -14,15 +14,15 @@ import static engine.MoveValidator.*;
 
 public class GameEngine {
     private static Board board;
+    // Keeps track of the previous board state so that moves can be undone
+    private static Board previousBoardState;
     private static boolean isWhiteTurn = true;
     private static Coordinate startCoordinate;
     private static boolean pieceSelected = false;
     private static Coordinate blackKingPos;
     private static Coordinate whiteKingPos;
-    private static boolean inCheck;
 
     public static void main(String[] args) {
-        inCheck = false;
         // TODO: Consider having these be set at board creation instead of hard-coded values
         whiteKingPos = new Coordinate(0, 4);
         blackKingPos = new Coordinate(7, 4);
@@ -40,24 +40,41 @@ public class GameEngine {
 
         MoveStatus status = isValid(board, move);
 
+        previousBoardState = board;
+
+        boolean moveSuccessful = false;
+
         // Check move is valid before doing move
         if (status != MoveStatus.INVALID) {
 
             switch (status) {
                 case VALID -> {
-                    doMove(move, false);
-                    visualiseMove(move, false);
+                    moveSuccessful = attemptMove(move, false);
                 }
                 case EN_PASSANT -> {
-                    doMove(move, true);
-                    visualiseMove(move, true);
+                    moveSuccessful = attemptMove(move, true);
                 }
             }
 
-            inCheck = isInCheck();
+            // Swap player turn only if move was successful
+            if (moveSuccessful) {
+                isWhiteTurn = !isWhiteTurn;
+            }
+        }
+    }
 
-            // Swap player turn
-            isWhiteTurn = !isWhiteTurn;
+    // Performs a move if it does not result in the turn player being in check
+    // Returns whether the move is completed or not
+    private static boolean attemptMove(Move move, boolean isEnPassant) {
+        doMove(move, isEnPassant);
+        // Check if turn player is in check after move
+        if (isInCheck()) {
+            // Undo move
+            board = previousBoardState;
+            return false;
+        } else {
+            visualiseMove(move, isEnPassant);
+            return true;
         }
     }
 
@@ -122,7 +139,7 @@ public class GameEngine {
         Coordinate kingPos;
         Piece[][] pieces = board.getBoard();
 
-        if (!isWhiteTurn) {
+        if (isWhiteTurn) {
             kingPos = whiteKingPos;
         } else {
             kingPos = blackKingPos;
@@ -133,8 +150,9 @@ public class GameEngine {
                 Coordinate start = new Coordinate(row, column);
                 Piece piece = board.getPiece(start);
                 // Check piece is of opposite colour and not empty
-                if (!piece.asString().equals(" ") && piece.isWhite() == isWhiteTurn) {
+                if (!piece.asString().equals(" ") && (piece.isWhite() != isWhiteTurn)) {
                     Move move = new Move(start, kingPos);
+                    // TODO: Currently always invalid because the turn has not yet changed
                     if (isValid(board, move) == MoveStatus.VALID) {
                         return true;
                     }
