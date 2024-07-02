@@ -152,7 +152,6 @@ public class GameEngine {
                 // Check piece is of opposite colour and not empty
                 if (!piece.asString().equals(" ") && (piece.isWhite() != isWhiteTurn)) {
                     Move move = new Move(start, kingPos);
-                    // TODO: Currently always invalid because the turn has not yet changed
                     if (isValid(board, move) == MoveStatus.VALID) {
                         return true;
                     }

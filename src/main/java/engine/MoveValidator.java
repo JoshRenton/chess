@@ -65,7 +65,6 @@ public final class MoveValidator {
                 (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1);
     }
 
-    // TODO: Need to be able to remove the en passanted pawn
     private static boolean isEnPassant(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
         // TODO: Consider not using GameEngine.isWhiteTurn
         int startRow = startCoordinate.getRow();
