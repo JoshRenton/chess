@@ -10,6 +10,8 @@ import utility.Square;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static engine.MoveValidator.*;
+
 public class GameEngine {
     private static Board board;
     private static boolean isWhiteTurn = true;
@@ -36,11 +38,21 @@ public class GameEngine {
     private static void playerAction(Coordinate endingCoordinates) {
         Move move = new Move(startCoordinate, endingCoordinates);
 
+        MoveStatus status = isValid(board, move);
+
         // Check move is valid before doing move
-        if (MoveValidator.isValid(board, move)) {
-            doMove(move);
-            // Update board interface
-            visualiseMove(move);
+        if (status != MoveStatus.INVALID) {
+
+            switch (status) {
+                case VALID -> {
+                    doMove(move, false);
+                    visualiseMove(move, false);
+                }
+                case EN_PASSANT -> {
+                    doMove(move, true);
+                    visualiseMove(move, true);
+                }
+            }
 
             inCheck = isInCheck();
 
@@ -49,8 +61,18 @@ public class GameEngine {
         }
     }
 
-    private static void doMove(Move move) {
+    private static void doMove(Move move, boolean isEnPassant) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
+
+        // Check if move is en passant
+        if (isEnPassant) {
+            int row = move.getEndRow() - 1;
+            int column = move.getEndColumn();
+
+            board.removePiece(new Coordinate(row, column));
+        }
+
+        // Update piece positions on board
         board.removePiece(move.getStartCoordinate());
         board.setPiece(movingPiece, move.getEndCoordinate());
 
@@ -66,7 +88,7 @@ public class GameEngine {
         }
     }
 
-    private static void visualiseMove(Move move) {
+    private static void visualiseMove(Move move, boolean isEnPassant) {
         Coordinate startCoordinate = move.getStartCoordinate();
         Coordinate endCoordinate = move.getEndCoordinate();
 
@@ -74,6 +96,15 @@ public class GameEngine {
                 startCoordinate);
         BoardVisualiser.updateButtonText(board.getPiece(endCoordinate).asString(),
                 endCoordinate);
+
+        if (isEnPassant) {
+            int row = endCoordinate.getRow() - 1;
+            int column = endCoordinate.getColumn();
+
+            Coordinate enPassantCoordinate = new Coordinate(row, column);
+
+            BoardVisualiser.updateButtonText(board.getPiece(enPassantCoordinate).asString(), enPassantCoordinate);
+        }
     }
 
     public Coordinate getBlackKingPos() {
@@ -104,7 +135,7 @@ public class GameEngine {
                 // Check piece is of opposite colour and not empty
                 if (!piece.asString().equals(" ") && piece.isWhite() == isWhiteTurn) {
                     Move move = new Move(start, kingPos);
-                    if (MoveValidator.isValid(board, move)) {
+                    if (isValid(board, move) == MoveStatus.VALID) {
                         return true;
                     }
                 }
