@@ -2,6 +2,10 @@ package pieces;
 
 import utility.Move;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+
 public class Pawn extends Piece{
     private boolean hasMoved;
 

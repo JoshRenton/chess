@@ -10,7 +10,7 @@ import java.awt.*;
 public final class BoardVisualiser {
     private static JFrame gameWindow;
     private static Square[][] boardGui;
-    private final static Color altBlack = new Color(174, 220, 174);
+    private final static Color ALT_BLACK = new Color(174, 220, 174);
 
     public static void initialise(Board board) {
         createGameWindow();
@@ -43,12 +43,12 @@ public final class BoardVisualiser {
 
         for (int row = 0; row < boardSize; row ++) {
             if (row % 2 == 0) {
-                color = altBlack;
+                color = ALT_BLACK;
             } else {
                 color = Color.WHITE;
             }
             for (int column = 0; column < boardSize; column++) {
-                Square square = createSquare(color, board.getPiece(new Coordinate(row, column)).asString(), new Coordinate(row, column));
+                Square square = createSquare(color, board.getPiece(new Coordinate(row, column)).getIcon(), new Coordinate(row, column));
                 square.addActionListener(GameEngine.getSquareListener());
                 color = swapColor(color);
 
@@ -64,6 +64,11 @@ public final class BoardVisualiser {
         }
     }
 
+    public static void updateButtonIcon(ImageIcon icon, Coordinate coordinates) {
+        Square square = boardGui[coordinates.getRow()][coordinates.getColumn()];
+        square.setIcon(icon);
+    }
+
     public static void updateButtonText(String text, Coordinate coordinates) {
         Square square = boardGui[coordinates.getRow()][coordinates.getColumn()];
         square.setText(text);
@@ -75,11 +80,11 @@ public final class BoardVisualiser {
     }
 
     private static Color swapColor(Color color) {
-        return color == Color.WHITE ? altBlack : Color.WHITE;
+        return color == Color.WHITE ? ALT_BLACK : Color.WHITE;
     }
 
-    private static Square createSquare(Color bg, String text, Coordinate coordinates) {
-        Square square = new Square(text, coordinates);
+    private static Square createSquare(Color bg, ImageIcon icon, Coordinate coordinates) {
+        Square square = new Square(icon, coordinates);
         square.setFont(new Font("Arial", Font.PLAIN, 40));
         square.setBorder(new LineBorder(Color.BLACK));
         square.setBackground(bg);

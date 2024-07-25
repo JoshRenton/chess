@@ -4,6 +4,7 @@ import board.Board;
 import pieces.Pawn;
 import pieces.Piece;
 import utility.Coordinate;
+import utility.Icons;
 import utility.Move;
 import utility.Square;
 
@@ -83,7 +84,7 @@ public class GameEngine {
 
         // Check if move is en passant
         if (isEnPassant) {
-            int row = move.getEndRow() - 1;
+            int row = move.getStartRow();
             int column = move.getEndColumn();
 
             board.removePiece(new Coordinate(row, column));
@@ -109,18 +110,20 @@ public class GameEngine {
         Coordinate startCoordinate = move.getStartCoordinate();
         Coordinate endCoordinate = move.getEndCoordinate();
 
-        BoardVisualiser.updateButtonText(board.getPiece(startCoordinate).asString(),
+        BoardVisualiser.updateButtonIcon(board.getPiece(startCoordinate).getIcon(),
                 startCoordinate);
-        BoardVisualiser.updateButtonText(board.getPiece(endCoordinate).asString(),
+        BoardVisualiser.updateButtonIcon(board.getPiece(endCoordinate).getIcon(),
                 endCoordinate);
 
         if (isEnPassant) {
-            int row = endCoordinate.getRow() - 1;
+            int row = startCoordinate.getRow();
             int column = endCoordinate.getColumn();
+            System.out.println(row);
+            System.out.println(column);
 
             Coordinate enPassantCoordinate = new Coordinate(row, column);
 
-            BoardVisualiser.updateButtonText(board.getPiece(enPassantCoordinate).asString(), enPassantCoordinate);
+            BoardVisualiser.updateButtonIcon(board.getPiece(enPassantCoordinate).getIcon(), enPassantCoordinate);
         }
     }
 

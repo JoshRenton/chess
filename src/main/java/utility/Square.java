@@ -8,8 +8,8 @@ import java.awt.*;
  */
 public class Square extends JButton {
     private final Coordinate coordinates;
-    public Square(String text, Coordinate coordinates) {
-        super(text);
+    public Square(ImageIcon icon, Coordinate coordinates) {
+        super(icon);
         this.coordinates = coordinates;
 
         // Make squares have no border padding
@@ -26,8 +26,6 @@ public class Square extends JButton {
 
     @Override
     public Dimension getPreferredSize() {
-        Dimension d = super.getPreferredSize();
-        int s = (int)(Math.max(d.getWidth(), d.getHeight()));
         // TODO: Un-hard code these values
         return new Dimension (100, 100);
     }

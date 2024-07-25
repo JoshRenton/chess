@@ -2,6 +2,8 @@ package pieces;
 
 import utility.Move;
 
+import javax.swing.*;
+
 public class EmptyPiece extends Piece {
     public EmptyPiece() {
         // The colour is irrelevant
@@ -15,5 +17,10 @@ public class EmptyPiece extends Piece {
 
     public String asString() {
         return " ";
+    }
+
+    @Override
+    public String getIconName() {
+        return "empty.png";
     }
 }
