@@ -17,4 +17,14 @@ public class KnightTest {
         boolean canMove = knight.canMove(move);
         assertThat(canMove).isTrue();
     }
+
+    @Test
+    public void canMoveFailsGivenIncorrectCoordinates() {
+        knight = new Knight(true);
+        Coordinate startCoordinate = new Coordinate(1, 2);
+        Coordinate endCoordinate = new Coordinate(3, 3);
+        Move move = new Move(startCoordinate, endCoordinate);
+        boolean canMove = knight.canMove(move);
+        assertThat(canMove).isTrue();
+    }
 }

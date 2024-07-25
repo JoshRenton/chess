@@ -10,6 +10,7 @@ import java.awt.*;
 public final class BoardVisualiser {
     private static JFrame gameWindow;
     private static Square[][] boardGui;
+    private final static Color altBlack = new Color(174, 220, 174);
 
     public static void initialise(Board board) {
         createGameWindow();
@@ -42,7 +43,7 @@ public final class BoardVisualiser {
 
         for (int row = 0; row < boardSize; row ++) {
             if (row % 2 == 0) {
-                color = Color.BLACK;
+                color = altBlack;
             } else {
                 color = Color.WHITE;
             }
@@ -74,7 +75,7 @@ public final class BoardVisualiser {
     }
 
     private static Color swapColor(Color color) {
-        return color == Color.WHITE ? Color.BLACK : Color.WHITE;
+        return color == Color.WHITE ? altBlack : Color.WHITE;
     }
 
     private static Square createSquare(Color bg, String text, Coordinate coordinates) {
