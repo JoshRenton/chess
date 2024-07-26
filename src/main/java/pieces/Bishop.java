@@ -14,7 +14,7 @@ public class Bishop extends Piece {
         return Math.abs(rowDiff) == Math.abs(columnDiff);
     }
 
-    public String asString() {
-        return "B";
+    public PieceName getName() {
+        return PieceName.BISHOP;
     }
 }

@@ -34,7 +34,7 @@ public class Pawn extends Piece{
         hasMoved = true;
     }
 
-    public String asString() {
-        return "P";
+    public PieceName getName() {
+        return PieceName.PAWN;
     }
 }

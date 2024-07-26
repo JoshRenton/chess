@@ -3,8 +3,8 @@ package engine;
 import board.Board;
 import pieces.Pawn;
 import pieces.Piece;
+import pieces.Piece.PieceName;
 import utility.Coordinate;
-import utility.Icons;
 import utility.Move;
 import utility.Square;
 
@@ -94,9 +94,9 @@ public class GameEngine {
         board.removePiece(move.getStartCoordinate());
         board.setPiece(movingPiece, move.getEndCoordinate());
 
-        if (movingPiece.asString().equals("P")) {
+        if (movingPiece.getName() == PieceName.PAWN) {
             ((Pawn) movingPiece).setMoved();
-        } else if (movingPiece.asString().equals("K")) {
+        } else if (movingPiece.getName() == PieceName.KING) {
             // Update king position
             if (movingPiece.isWhite()) {
                 whiteKingPos = move.getEndCoordinate();
@@ -153,7 +153,7 @@ public class GameEngine {
                 Coordinate start = new Coordinate(row, column);
                 Piece piece = board.getPiece(start);
                 // Check piece is of opposite colour and not empty
-                if (!piece.asString().equals(" ") && (piece.isWhite() != isWhiteTurn)) {
+                if (piece.getName() != PieceName.EMPTY && (piece.isWhite() != isWhiteTurn)) {
                     Move move = new Move(start, kingPos);
                     if (isValid(board, move) == MoveStatus.VALID) {
                         return true;

@@ -6,6 +6,7 @@ import utility.Coordinate;
 import utility.Move;
 
 import static engine.GameEngine.*;
+import static pieces.Piece.*;
 
 // TODO: Add validation for king moves.
 
@@ -22,7 +23,7 @@ public final class MoveValidator {
         Piece endPiece = board.getPiece(move.getEndCoordinate());
 
         // Deal with pawn special rules
-        if (piece.asString().equals("P")) {
+        if (piece.getName() == PieceName.PAWN) {
             if (piece.canMove(move)) {
                 if (isValidPawnMove(board, startCoordinate, endCoordinate)) {
                     return MoveStatus.VALID;
@@ -30,16 +31,16 @@ public final class MoveValidator {
                     return MoveStatus.INVALID;
                 }
             } else {
-                if (isPawnCapture(startCoordinate, endCoordinate) && !endPiece.asString().equals(" ")) {
+                if (isPawnCapture(startCoordinate, endCoordinate) && endPiece.getName() != PieceName.EMPTY) {
                     return MoveStatus.VALID;
                 } else if (isEnPassant(board, startCoordinate, endCoordinate)) {
                     return MoveStatus.EN_PASSANT;
                 }
             }
         } else if (piece.canMove(move)) {
-            if (endPiece.asString().equals(" ") || isOppositeColourPiece(piece, endPiece)) {
+            if (endPiece.getName() == PieceName.EMPTY || isOppositeColourPiece(piece, endPiece)) {
                 // Knights can ignore obstructions
-                if (piece.asString().equals("N")) {
+                if (piece.getName() == PieceName.KNIGHT) {
                     return MoveStatus.VALID;
                 } else if (pathIsUnobstructed(board, startCoordinate, endCoordinate)) {
                     return MoveStatus.VALID;
@@ -53,7 +54,7 @@ public final class MoveValidator {
     // Returns whether the attempted move is a valid pawn move (not including captures)
     private static boolean isValidPawnMove(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
         return pathIsUnobstructed(board, startCoordinate, endCoordinate) &&
-                board.getPiece(endCoordinate).asString().equals(" ");
+                board.getPiece(endCoordinate).getName() == PieceName.EMPTY;
     }
 
     // Returns whether the attempted move is a valid pawn capture
@@ -72,10 +73,10 @@ public final class MoveValidator {
         int endColumn = endCoordinate.getColumn();
 
         if (isWhiteTurn() && startRow == 4 && Math.abs(endColumn - startColumn) == 1 &&
-                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P")) {
+                board.getPiece(new Coordinate(startRow, endColumn)).getName() == PieceName.PAWN) {
             return true;
         } else return !isWhiteTurn() && startRow == 3 && Math.abs(endColumn - startColumn) == 1 &&
-                board.getPiece(new Coordinate(startRow, endColumn)).asString().equals("P");
+                board.getPiece(new Coordinate(startRow, endColumn)).getName() == PieceName.PAWN;
     }
 
     // Check that the moving piece is of the turn players colour
@@ -116,7 +117,7 @@ public final class MoveValidator {
     }
 
     private static boolean isOppositeColourPiece(Piece piece, Piece endPiece) {
-        return !endPiece.asString().equals(" ") && piece.isWhite() != endPiece.isWhite();
+        return endPiece.getName() != PieceName.EMPTY && piece.isWhite() != endPiece.isWhite();
     }
 
     public enum MoveStatus {

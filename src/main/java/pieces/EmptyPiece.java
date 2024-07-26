@@ -15,8 +15,8 @@ public class EmptyPiece extends Piece {
         return false;
     }
 
-    public String asString() {
-        return " ";
+    public PieceName getName() {
+        return PieceName.EMPTY;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class King extends Piece {
         hasMoved = true;
     }
 
-    public String asString() {
-        return "K";
+    public PieceName getName() {
+        return PieceName.KING;
     }
 }

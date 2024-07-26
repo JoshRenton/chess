@@ -18,7 +18,7 @@ public class Rook extends Piece {
         hasMoved = true;
     }
 
-    public String asString() {
-        return "R";
+    public PieceName getName() {
+        return PieceName.ROOK;
     }
 }

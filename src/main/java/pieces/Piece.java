@@ -20,7 +20,7 @@ public abstract class Piece {
 
     public abstract boolean canMove(Move move);
 
-    public abstract String asString();
+    public abstract PieceName getName();
 
     public ImageIcon getIcon() {
         return this.icon;
@@ -28,9 +28,19 @@ public abstract class Piece {
 
     public String getIconName() {
         if (this.isWhite) {
-            return "white" + this.asString() + ".png";
+            return "white" + this.getName() + ".png";
         } else {
-            return "black" + this.asString() + ".png";
+            return "black" + this.getName() + ".png";
         }
+    }
+
+    public enum PieceName {
+        PAWN,
+        KNIGHT,
+        BISHOP,
+        ROOK,
+        QUEEN,
+        KING,
+        EMPTY
     }
 }

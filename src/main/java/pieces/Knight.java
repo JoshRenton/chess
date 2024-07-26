@@ -15,7 +15,7 @@ public class Knight extends Piece {
                 || absRowDiff == 2 && absColumnDiff == 1;
     }
 
-    public String asString() {
-        return "N";
+    public PieceName getName() {
+        return PieceName.KNIGHT;
     }
 }
