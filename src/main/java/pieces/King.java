@@ -4,8 +4,8 @@ import utility.Move;
 
 public class King extends Piece {
     boolean hasMoved;
-    public King(boolean isWhite) {
-        super(isWhite);
+    public King(Colour colour) {
+        super(colour);
         hasMoved = true;
     }
 

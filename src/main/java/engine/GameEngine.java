@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import static engine.MoveValidator.*;
+import static pieces.Piece.*;
 
 public class GameEngine {
     private static Board board;
@@ -171,13 +172,19 @@ public class GameEngine {
         public void actionPerformed(ActionEvent e) {
             Square square = (Square) e.getSource();
             Coordinate coordinate = square.getCoordinates();
+            Piece currentSelectedPiece = board.getPiece(coordinate);
             if (pieceSelected) {
-                playerAction(coordinate);
-                pieceSelected = false;
+                Piece previousSelectedPiece = board.getPiece(startCoordinate);
+                if (previousSelectedPiece.getColour() != currentSelectedPiece.getColour()) {
+                    playerAction(coordinate);
+                    pieceSelected = false;
+                } else {
+                    startCoordinate = coordinate;
+                }
 
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
-            } else if (board.isOccupied(coordinate) && board.getPiece(coordinate).isWhite() == isWhiteTurn()){
+            } else if (currentSelectedPiece.isWhite() == isWhiteTurn()){
                 startCoordinate = coordinate;
                 pieceSelected = true;
             }

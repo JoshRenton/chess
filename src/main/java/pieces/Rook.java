@@ -5,8 +5,8 @@ import utility.Move;
 public class Rook extends Piece {
     boolean hasMoved;
 
-    public Rook(boolean isWhite) {
-        super(isWhite);
+    public Rook(Colour colour) {
+        super(colour);
         hasMoved = false;
     }
 

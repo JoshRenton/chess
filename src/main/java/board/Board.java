@@ -5,6 +5,8 @@ import utility.Coordinate;
 
 import java.util.stream.Stream;
 
+import static pieces.Piece.*;
+
 public class Board {
     private static final int BOARD_SIZE = 8;
     private Piece[][] board;
@@ -55,33 +57,33 @@ public class Board {
         int blackRow = 6;
 
         for (int column = 0; column < BOARD_SIZE; column++) {
-            setPiece(new Pawn(true), new Coordinate(whiteRow, column));
-            setPiece(new Pawn(false), new Coordinate(blackRow, column));
+            setPiece(new Pawn(Colour.WHITE), new Coordinate(whiteRow, column));
+            setPiece(new Pawn(Colour.BLACK), new Coordinate(blackRow, column));
         }
     }
 
     private void setupBackRow() {
-        Stream.of(true, false).forEach(isWhite -> {
+        Stream.of(Colour.WHITE, Colour.BLACK).forEach(colour -> {
             int row;
 
-            if (isWhite) {
+            if (colour == Colour.WHITE) {
                 row = 0;
             } else {
                 row = BOARD_SIZE - 1;
             }
 
-            setPiece(new Rook(isWhite), new Coordinate(row, 0));
-            setPiece(new Rook(isWhite), new Coordinate(row, BOARD_SIZE - 1));
+            setPiece(new Rook(colour), new Coordinate(row, 0));
+            setPiece(new Rook(colour), new Coordinate(row, BOARD_SIZE - 1));
 
-            setPiece(new Knight(isWhite), new Coordinate(row, 1));
-            setPiece(new Knight(isWhite), new Coordinate(row, BOARD_SIZE - 2));
+            setPiece(new Knight(colour), new Coordinate(row, 1));
+            setPiece(new Knight(colour), new Coordinate(row, BOARD_SIZE - 2));
 
-            setPiece(new Bishop(isWhite), new Coordinate(row, 2));
-            setPiece(new Bishop(isWhite), new Coordinate(row, BOARD_SIZE - 3));
+            setPiece(new Bishop(colour), new Coordinate(row, 2));
+            setPiece(new Bishop(colour), new Coordinate(row, BOARD_SIZE - 3));
 
-            setPiece(new Queen(isWhite), new Coordinate(row, 3));
+            setPiece(new Queen(colour), new Coordinate(row, 3));
 
-            setPiece(new King(isWhite), new Coordinate(row, 4));
+            setPiece(new King(colour), new Coordinate(row, 4));
         });
     }
 }

@@ -6,16 +6,16 @@ import utility.Move;
 import javax.swing.*;
 
 public abstract class Piece {
-    private final boolean isWhite;
+    private final Colour colour;
     private final ImageIcon icon;
 
-    public Piece(boolean isWhite) {
-        this.isWhite = isWhite;
+    public Piece(Colour colour) {
+        this.colour = colour;
         icon = Icons.loadIcon(this.getIconName());
     }
 
     public boolean isWhite() {
-        return isWhite;
+        return colour == Colour.WHITE;
     }
 
     public abstract boolean canMove(Move move);
@@ -27,11 +27,15 @@ public abstract class Piece {
     }
 
     public String getIconName() {
-        if (this.isWhite) {
+        if (this.isWhite()) {
             return "white" + this.getName() + ".png";
         } else {
             return "black" + this.getName() + ".png";
         }
+    }
+
+    public Colour getColour() {
+        return colour;
     }
 
     public enum PieceName {
@@ -42,5 +46,16 @@ public abstract class Piece {
         QUEEN,
         KING,
         EMPTY
+    }
+
+    public enum Colour {
+        BLACK,
+        WHITE,
+        NONE;
+
+        // Returns true if this colour is opposite the turn player
+        public boolean isTurnPlayerColour(boolean isWhiteTurn) {
+            return (this == BLACK && isWhiteTurn) || (this == WHITE && !isWhiteTurn);
+        }
     }
 }

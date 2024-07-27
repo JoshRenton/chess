@@ -2,12 +2,9 @@ package pieces;
 
 import utility.Move;
 
-import javax.swing.*;
-
 public class EmptyPiece extends Piece {
     public EmptyPiece() {
-        // The colour is irrelevant
-        super(true);
+        super(Colour.NONE);
     }
 
     public boolean canMove(Move move) {

@@ -2,6 +2,7 @@ package pieces;
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static pieces.Piece.*;
 
 import utility.Coordinate;
 import utility.Move;
@@ -10,7 +11,7 @@ public class BishopTest {
     private Bishop bishop;
     @Test
     public void canMoveSucceedsGivenCorrectCoordinates() {
-        bishop = new Bishop(true);
+        bishop = new Bishop(Colour.WHITE);
         Coordinate startCoordinate = new Coordinate(2, 2);
         Coordinate endCoordinate = new Coordinate(1, 3);
         Move move = new Move(startCoordinate, endCoordinate);
@@ -21,7 +22,7 @@ public class BishopTest {
     @Test
     // TODO: Currently only tests a single incorrect coordinate
     public void canMoveFailsGivenIncorrectCoordinates() {
-        bishop = new Bishop(true);
+        bishop = new Bishop(Colour.WHITE);
         Coordinate startCoordinate = new Coordinate(2, 2);
         Coordinate endCoordinate = new Coordinate(5, 3);
         Move move = new Move(startCoordinate, endCoordinate);

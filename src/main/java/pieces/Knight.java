@@ -3,8 +3,8 @@ package pieces;
 import utility.Move;
 
 public class Knight extends Piece {
-    public Knight(boolean isWhite) {
-        super(isWhite);
+    public Knight(Colour colour) {
+        super(colour);
     }
 
     public boolean canMove(Move move) {
