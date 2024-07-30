@@ -8,13 +8,12 @@ import utility.Move;
 import static engine.GameEngine.*;
 import static pieces.Piece.*;
 
-// TODO: Add validation for king moves.
-
 public final class MoveValidator {
 
     private MoveValidator() {}
 
-    public static MoveStatus isValid(Board board, Move move) {
+    // Checks if a move is valid and returns either a VALID, INVALID, or EN_PASSANT status
+    public static MoveStatus isValid(final Board board, final Move move) {
         Piece piece = board.getPiece(move.getStartCoordinate());
 
         Coordinate startCoordinate = new Coordinate(move.getStartRow(), move.getStartColumn());
@@ -52,13 +51,14 @@ public final class MoveValidator {
     }
 
     // Returns whether the attempted move is a valid pawn move (not including captures)
-    private static boolean isValidPawnMove(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
+    private static boolean isValidPawnMove(final Board board, final Coordinate startCoordinate,
+                                           final Coordinate endCoordinate) {
         return pathIsUnobstructed(board, startCoordinate, endCoordinate) &&
                 board.getPiece(endCoordinate).getName() == PieceName.EMPTY;
     }
 
     // Returns whether the attempted move is a valid pawn capture
-    private static boolean isPawnCapture(Coordinate startCoordinate, Coordinate endCoordinate) {
+    private static boolean isPawnCapture(final Coordinate startCoordinate, final Coordinate endCoordinate) {
         if (isWhiteTurn() && ((endCoordinate.getRow() - startCoordinate.getRow()) == 1) &&
                 (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1)) {
             return true;
@@ -66,7 +66,9 @@ public final class MoveValidator {
                 (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1);
     }
 
-    private static boolean isEnPassant(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
+    // Returns whether the attempted move is en passant
+    private static boolean isEnPassant(final Board board, final Coordinate startCoordinate,
+                                       final Coordinate endCoordinate) {
         // TODO: Consider not using GameEngine.isWhiteTurn
         int startRow = startCoordinate.getRow();
         int startColumn = startCoordinate.getColumn();
@@ -79,13 +81,9 @@ public final class MoveValidator {
                 board.getPiece(new Coordinate(startRow, endColumn)).getName() == PieceName.PAWN;
     }
 
-    // Check that the moving piece is of the turn players colour
-    private static boolean isCorrectTurn(Boolean isWhitePiece) {
-        return isWhitePiece == isWhiteTurn();
-    }
-
     // Returns true if path between start coordinate and end coordinate is unobstructed
-    private static boolean pathIsUnobstructed(Board board, Coordinate startCoordinate, Coordinate endCoordinate) {
+    private static boolean pathIsUnobstructed(final Board board, final Coordinate startCoordinate,
+                                              final Coordinate endCoordinate) {
         int rowDirection = endCoordinate.getRow() - startCoordinate.getRow();
         int columnDirection = endCoordinate.getColumn() - startCoordinate.getColumn();
 
@@ -116,10 +114,16 @@ public final class MoveValidator {
         return direction;
     }
 
-    private static boolean isOppositeColourPiece(Piece piece, Piece endPiece) {
+    private static boolean isOppositeColourPiece(final Piece piece, final Piece endPiece) {
         return endPiece.getName() != PieceName.EMPTY && piece.isWhite() != endPiece.isWhite();
     }
 
+    /*
+        A move status of VALID indicates that the attempted move is a legal move.
+        A move status of INVALID indicates that the attempted move is not a legal move.
+        A move status of EN_PASSANT indicates that the attempted move is an en_passant, which differs in functionality
+        from other moves.
+     */
     public enum MoveStatus {
         VALID,
         INVALID,
