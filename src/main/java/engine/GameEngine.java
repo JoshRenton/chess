@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import static engine.MoveValidator.*;
-import static pieces.Piece.*;
 
 public class GameEngine {
     private static Board board;
@@ -42,7 +41,7 @@ public class GameEngine {
 
         MoveStatus status = isValid(board, move);
 
-        previousBoardState = board;
+        previousBoardState = new Board(board);
 
         boolean moveSuccessful = false;
 
@@ -80,7 +79,7 @@ public class GameEngine {
         }
     }
 
-    private static void doMove(Move move, boolean isEnPassant) {
+    private static void doMove(final Move move, final boolean isEnPassant) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
 
         // Check if move is en passant
@@ -107,7 +106,8 @@ public class GameEngine {
         }
     }
 
-    private static void visualiseMove(Move move, boolean isEnPassant) {
+    // Update the GUI to show the result of a move
+    private static void visualiseMove(final Move move, final boolean isEnPassant) {
         Coordinate startCoordinate = move.getStartCoordinate();
         Coordinate endCoordinate = move.getEndCoordinate();
 
@@ -136,12 +136,8 @@ public class GameEngine {
         return whiteKingPos;
     }
 
-    // Returns true if a player is in check
-    // TODO: A piece moving will never result in a discovered check by a pawn or knight
-    // TODO: Therefore, can check the moving piece and also for rooks, bishops and queens (king cannot directly check)
     private static boolean isInCheck() {
         Coordinate kingPos;
-        Piece[][] pieces = board.getBoard();
 
         if (isWhiteTurn) {
             kingPos = whiteKingPos;
@@ -149,21 +145,58 @@ public class GameEngine {
             kingPos = blackKingPos;
         }
 
-        for (int row = 0; row < pieces.length; row++) {
-            for (int column = 0; column < pieces[row].length; column++) {
-                Coordinate start = new Coordinate(row, column);
-                Piece piece = board.getPiece(start);
-                // Check piece is of opposite colour and not empty
-                if (piece.getName() != PieceName.EMPTY && (piece.isWhite() != isWhiteTurn)) {
-                    Move move = new Move(start, kingPos);
-                    if (isValid(board, move) == MoveStatus.VALID) {
-                        return true;
-                    }
+        return isSquareThreatened(kingPos);
+    }
+
+    // Check if any opposing pieces threaten the input coordinate
+    private static boolean isSquareThreatened(Coordinate coordinate) {
+        int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
+
+        for (int[] stepDir: steps) {
+            if (!isDirectionSafe(coordinate, stepDir[0], stepDir[1])) {
+                return true;
+            }
+        }
+
+        // Check if any knights are attacking the specified square
+        for (int[] knightStep: knightSteps) {
+            int rowToCheck = coordinate.getRow() + knightStep[0];
+            int columnToCheck = coordinate.getColumn() + knightStep[1];
+
+            if (rowToCheck >= 0 && rowToCheck < board.getBoardSize() && columnToCheck >= 0 &&
+                    columnToCheck < board.getBoardSize()) {
+                Piece piece = board.getPiece(new Coordinate(rowToCheck, columnToCheck));
+                if (piece.getName() == PieceName.KNIGHT && piece.isWhite() != isWhiteTurn()) {
+                    return true;
                 }
             }
         }
 
         return false;
+    }
+
+    // TODO: Maybe change to isDirectionThreatened to match other methods
+    private static boolean isDirectionSafe(Coordinate initialCoordinate, final int rowStep, final int columnStep) {
+        final int row = initialCoordinate.getRow();
+        final int column = initialCoordinate.getColumn();
+
+        int currentRow = row + rowStep;
+        int currentColumn = column + columnStep;
+
+        while (currentRow < board.getBoardSize() && currentRow >= 0 && currentColumn < board.getBoardSize() &&
+                currentColumn >= 0) {
+            Coordinate currentCoordinate = new Coordinate(currentRow, currentColumn);
+            if (board.isOccupied(currentCoordinate)) {
+                Move move = new Move(currentCoordinate, initialCoordinate);
+                return MoveValidator.isValid(board, move) == MoveStatus.INVALID;
+            }
+
+            currentRow += rowStep;
+            currentColumn += columnStep;
+        }
+
+        return true;
     }
 
     // Listens for interaction with a square

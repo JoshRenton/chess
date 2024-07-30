@@ -16,6 +16,18 @@ public class Board {
         setupBoard();
     }
 
+    // Creates a new board using the board state of the input board
+    public Board(final Board boardToCopy) {
+        initialiseBoard();
+
+        for (int row = 0; row < boardToCopy.getBoardSize(); row++) {
+            for (int column = 0; column < boardToCopy.getBoardSize(); column++) {
+                Coordinate coordinate = new Coordinate(row, column);
+                this.board[row][column] = boardToCopy.getBoard()[row][column];
+            }
+        }
+    }
+
     private void initialiseBoard() {
         board = new Piece[8][8];
     }
