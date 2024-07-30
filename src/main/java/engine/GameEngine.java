@@ -154,7 +154,7 @@ public class GameEngine {
         int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
 
         for (int[] stepDir: steps) {
-            if (!isDirectionSafe(coordinate, stepDir[0], stepDir[1])) {
+            if (isDirectionThreatened(coordinate, stepDir[0], stepDir[1])) {
                 return true;
             }
         }
@@ -177,7 +177,8 @@ public class GameEngine {
     }
 
     // TODO: Maybe change to isDirectionThreatened to match other methods
-    private static boolean isDirectionSafe(Coordinate initialCoordinate, final int rowStep, final int columnStep) {
+    private static boolean isDirectionThreatened(final Coordinate initialCoordinate, final int rowStep,
+                                                 final int columnStep) {
         final int row = initialCoordinate.getRow();
         final int column = initialCoordinate.getColumn();
 
@@ -189,14 +190,14 @@ public class GameEngine {
             Coordinate currentCoordinate = new Coordinate(currentRow, currentColumn);
             if (board.isOccupied(currentCoordinate)) {
                 Move move = new Move(currentCoordinate, initialCoordinate);
-                return MoveValidator.isValid(board, move) == MoveStatus.INVALID;
+                return MoveValidator.isValid(board, move) == MoveStatus.VALID;
             }
 
             currentRow += rowStep;
             currentColumn += columnStep;
         }
 
-        return true;
+        return false;
     }
 
     // Listens for interaction with a square
