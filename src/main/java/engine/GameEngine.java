@@ -24,7 +24,7 @@ public class GameEngine {
     private static Coordinate whiteKingPos;
 
     public static void main(String[] args) {
-        // TODO: Consider having these be set at board creation instead of hard-coded values
+        // TODO: Consider having a board method to get king positions instead of hard-coding
         whiteKingPos = new Coordinate(0, 4);
         blackKingPos = new Coordinate(7, 4);
         board = new Board();
@@ -79,6 +79,7 @@ public class GameEngine {
         }
     }
 
+    // Update the internal board state to reflect the input move
     private static void doMove(final Move move, final boolean isEnPassant) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
 
@@ -138,23 +139,26 @@ public class GameEngine {
 
     private static boolean isInCheck() {
         Coordinate kingPos;
+        boolean whiteThreatening;
 
         if (isWhiteTurn) {
             kingPos = whiteKingPos;
+            whiteThreatening = false;
         } else {
             kingPos = blackKingPos;
+            whiteThreatening = true;
         }
 
-        return isSquareThreatened(kingPos);
+        return isSquareThreatened(kingPos, whiteThreatening);
     }
 
-    // Check if any opposing pieces threaten the input coordinate
-    private static boolean isSquareThreatened(Coordinate coordinate) {
+    // Check if any pieces of the specified colour threaten the input coordinate
+    private static boolean isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
         int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
 
         for (int[] stepDir: steps) {
-            if (isDirectionThreatened(coordinate, stepDir[0], stepDir[1])) {
+            if (isDirectionThreatened(coordinate, stepDir[0], stepDir[1], whiteThreatening)) {
                 return true;
             }
         }
@@ -167,7 +171,7 @@ public class GameEngine {
             if (rowToCheck >= 0 && rowToCheck < board.getBoardSize() && columnToCheck >= 0 &&
                     columnToCheck < board.getBoardSize()) {
                 Piece piece = board.getPiece(new Coordinate(rowToCheck, columnToCheck));
-                if (piece.getName() == PieceName.KNIGHT && piece.isWhite() != isWhiteTurn()) {
+                if (piece.getName() == PieceName.KNIGHT && piece.isWhite() == whiteThreatening) {
                     return true;
                 }
             }
@@ -176,9 +180,8 @@ public class GameEngine {
         return false;
     }
 
-    // TODO: Maybe change to isDirectionThreatened to match other methods
     private static boolean isDirectionThreatened(final Coordinate initialCoordinate, final int rowStep,
-                                                 final int columnStep) {
+                                                 final int columnStep, final boolean whiteThreatening) {
         final int row = initialCoordinate.getRow();
         final int column = initialCoordinate.getColumn();
 
@@ -189,8 +192,13 @@ public class GameEngine {
                 currentColumn >= 0) {
             Coordinate currentCoordinate = new Coordinate(currentRow, currentColumn);
             if (board.isOccupied(currentCoordinate)) {
-                Move move = new Move(currentCoordinate, initialCoordinate);
-                return MoveValidator.isValid(board, move) == MoveStatus.VALID;
+                Piece piece = board.getPiece(currentCoordinate);
+                if (piece.isWhite() == whiteThreatening) {
+                    Move move = new Move(currentCoordinate, initialCoordinate);
+                    return MoveValidator.isValid(board, move) == MoveStatus.VALID;
+                } else {
+                    return false;
+                }
             }
 
             currentRow += rowStep;
