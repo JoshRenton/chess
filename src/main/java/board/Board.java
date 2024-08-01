@@ -45,22 +45,22 @@ public class Board {
         return BOARD_SIZE;
     }
 
-    public void setPiece(Piece piece, Coordinate coordinates) {
+    public void setPiece(final Piece piece, final Coordinate coordinates) {
         int row = coordinates.getRow();
         int column = coordinates.getColumn();
         board[row][column] = piece;
     }
 
-    public void removePiece(Coordinate coordinates) {
+    public void removePiece(final Coordinate coordinates) {
         setPiece(null, coordinates);
     }
 
-    public Piece getPiece(Coordinate coordinates) {
+    public Piece getPiece(final Coordinate coordinates) {
         return board[coordinates.getRow()][coordinates.getColumn()] != null ?
                 board[coordinates.getRow()][coordinates.getColumn()] : new EmptyPiece();
     }
 
-    public boolean isOccupied(Coordinate coordinates) {
+    public boolean isOccupied(final Coordinate coordinates) {
         return board[coordinates.getRow()][coordinates.getColumn()] != null;
     }
 

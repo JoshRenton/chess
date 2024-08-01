@@ -137,6 +137,10 @@ public class GameEngine {
         return whiteKingPos;
     }
 
+    private static boolean isInCheckmate() {
+
+    }
+
     private static boolean isInCheck() {
         Coordinate kingPos;
         boolean whiteThreatening;
@@ -211,7 +215,7 @@ public class GameEngine {
     // Listens for interaction with a square
     private static class SquareListener implements ActionListener {
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             Square square = (Square) e.getSource();
             Coordinate coordinate = square.getCoordinates();
             Piece currentSelectedPiece = board.getPiece(coordinate);
