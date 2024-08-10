@@ -1,11 +1,11 @@
 package board;
 
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import pieces.Piece;
 import pieces.Piece.PieceName;
 import utility.Coordinate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BoardTest {
     private Board board;

@@ -5,7 +5,7 @@ import utility.Coordinate;
 
 import java.util.stream.Stream;
 
-import static pieces.Piece.*;
+import static pieces.Piece.Colour;
 
 public class Board {
     private static final int BOARD_SIZE = 8;

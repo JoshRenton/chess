@@ -1,6 +1,8 @@
 package engine;
 
 import board.Board;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pieces.Pawn;
 import pieces.Piece;
 import pieces.Piece.PieceName;
@@ -10,8 +12,11 @@ import utility.Square;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import static engine.MoveValidator.*;
+import static engine.MoveValidator.MoveStatus;
+import static engine.MoveValidator.isValid;
 
 public class GameEngine {
     private static Board board;
@@ -22,6 +27,7 @@ public class GameEngine {
     private static boolean pieceSelected = false;
     private static Coordinate blackKingPos;
     private static Coordinate whiteKingPos;
+    private static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
         // TODO: Consider having a board method to get king positions instead of hard-coding
@@ -138,7 +144,7 @@ public class GameEngine {
     }
 
     private static boolean isInCheckmate() {
-
+        return false;
     }
 
     private static boolean isInCheck() {
@@ -153,17 +159,20 @@ public class GameEngine {
             whiteThreatening = true;
         }
 
-        return isSquareThreatened(kingPos, whiteThreatening);
+        return isSquareThreatened(kingPos, whiteThreatening).isThreatened();
     }
 
     // Check if any pieces of the specified colour threaten the input coordinate
-    private static boolean isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
+    private static ThreatStatus isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
         int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
 
+        ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+
         for (int[] stepDir: steps) {
-            if (isDirectionThreatened(coordinate, stepDir[0], stepDir[1], whiteThreatening)) {
-                return true;
+            ThreatStatus status = isDirectionThreatened(coordinate, stepDir[0], stepDir[1], whiteThreatening);
+            if (status.isThreatened()) {
+                coordinates.addAll(Arrays.asList(status.getThreateningCoordinates()));
             }
         }
 
@@ -174,17 +183,25 @@ public class GameEngine {
 
             if (rowToCheck >= 0 && rowToCheck < board.getBoardSize() && columnToCheck >= 0 &&
                     columnToCheck < board.getBoardSize()) {
-                Piece piece = board.getPiece(new Coordinate(rowToCheck, columnToCheck));
+                Coordinate potentialKnightCoordinate = new Coordinate(rowToCheck, columnToCheck);
+                Piece piece = board.getPiece(potentialKnightCoordinate);
                 if (piece.getName() == PieceName.KNIGHT && piece.isWhite() == whiteThreatening) {
-                    return true;
+                    coordinates.add(potentialKnightCoordinate);
                 }
             }
         }
 
-        return false;
+        if (coordinates.size() != 0) {
+            Coordinate[] threateningCoordinates = new Coordinate[]{};
+            return new ThreatStatus(true, coordinates.toArray(threateningCoordinates));
+        }
+
+        logger.debug("Square {} threatened by coordinates: {}", coordinate, coordinates);
+
+        return new ThreatStatus(false);
     }
 
-    private static boolean isDirectionThreatened(final Coordinate initialCoordinate, final int rowStep,
+    private static ThreatStatus isDirectionThreatened(final Coordinate initialCoordinate, final int rowStep,
                                                  final int columnStep, final boolean whiteThreatening) {
         final int row = initialCoordinate.getRow();
         final int column = initialCoordinate.getColumn();
@@ -199,9 +216,11 @@ public class GameEngine {
                 Piece piece = board.getPiece(currentCoordinate);
                 if (piece.isWhite() == whiteThreatening) {
                     Move move = new Move(currentCoordinate, initialCoordinate);
-                    return MoveValidator.isValid(board, move) == MoveStatus.VALID;
+                    if (MoveValidator.isValid(board, move) == MoveStatus.VALID) {
+                        return new ThreatStatus(true, currentCoordinate);
+                    }
                 } else {
-                    return false;
+                    return new ThreatStatus(false);
                 }
             }
 
@@ -209,7 +228,7 @@ public class GameEngine {
             currentColumn += columnStep;
         }
 
-        return false;
+        return new ThreatStatus(false);
     }
 
     // Listens for interaction with a square

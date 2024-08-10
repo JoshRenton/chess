@@ -1,11 +1,11 @@
 package pieces;
 
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-import static pieces.Piece.*;
-
 import utility.Coordinate;
 import utility.Move;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static pieces.Piece.Colour;
 
 public class BishopTest {
     private Bishop bishop;

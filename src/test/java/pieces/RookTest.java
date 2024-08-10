@@ -5,7 +5,7 @@ import utility.Coordinate;
 import utility.Move;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pieces.Piece.*;
+import static pieces.Piece.Colour;
 
 public class RookTest {
     private Rook rook;

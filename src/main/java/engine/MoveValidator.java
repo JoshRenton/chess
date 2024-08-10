@@ -1,12 +1,12 @@
 package engine;
 
-import pieces.Piece;
 import board.Board;
+import pieces.Piece;
 import utility.Coordinate;
 import utility.Move;
 
-import static engine.GameEngine.*;
-import static pieces.Piece.*;
+import static engine.GameEngine.isWhiteTurn;
+import static pieces.Piece.PieceName;
 
 public final class MoveValidator {
 
