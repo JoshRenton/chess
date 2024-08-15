@@ -14,4 +14,9 @@ public class Coordinate {
     public int getColumn() {
         return coordinate[1];
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%d, %d]", this.getRow(), this.getColumn());
+    }
 }

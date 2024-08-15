@@ -3,6 +3,7 @@ package engine;
 import board.Board;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 import pieces.Pawn;
 import pieces.Piece;
 import pieces.Piece.PieceName;
@@ -27,7 +28,7 @@ public class GameEngine {
     private static boolean pieceSelected = false;
     private static Coordinate blackKingPos;
     private static Coordinate whiteKingPos;
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
     public static void main(String[] args) {
         // TODO: Consider having a board method to get king positions instead of hard-coding
@@ -233,6 +234,7 @@ public class GameEngine {
 
     // Listens for interaction with a square
     private static class SquareListener implements ActionListener {
+        private final Logger logger = LogManager.getLogger(this.getClass());
         @Override
         public void actionPerformed(final ActionEvent e) {
             Square square = (Square) e.getSource();
@@ -245,6 +247,7 @@ public class GameEngine {
                     pieceSelected = false;
                 } else {
                     startCoordinate = coordinate;
+                    logger.debug("Currently selected {} at {}", board.getPiece(coordinate).getName(), coordinate);
                 }
 
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
@@ -252,6 +255,7 @@ public class GameEngine {
             } else if (currentSelectedPiece.isWhite() == isWhiteTurn()){
                 startCoordinate = coordinate;
                 pieceSelected = true;
+                logger.debug("Currently selected {} at {}", board.getPiece(coordinate).getName(), coordinate);
             }
         }
     }
