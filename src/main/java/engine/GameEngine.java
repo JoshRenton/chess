@@ -3,8 +3,6 @@ package engine;
 import board.Board;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
-import pieces.Pawn;
 import pieces.Piece;
 import pieces.Piece.PieceName;
 import utility.Coordinate;
@@ -54,15 +52,7 @@ public class GameEngine {
 
         // Check move is valid before doing move
         if (status != MoveStatus.INVALID) {
-
-            switch (status) {
-                case VALID -> {
-                    moveSuccessful = attemptMove(move, false);
-                }
-                case EN_PASSANT -> {
-                    moveSuccessful = attemptMove(move, true);
-                }
-            }
+            moveSuccessful = attemptMove(move, status);
 
             // Swap player turn only if move was successful
             if (moveSuccessful) {
@@ -73,38 +63,57 @@ public class GameEngine {
 
     // Performs a move if it does not result in the turn player being in check
     // Returns whether the move is completed or not
-    private static boolean attemptMove(Move move, boolean isEnPassant) {
-        doMove(move, isEnPassant);
+    private static boolean attemptMove(final Move move, final MoveStatus status) {
+        doMove(move, status);
         // Check if turn player is in check after move
         if (isInCheck()) {
             // Undo move
             board = previousBoardState;
             return false;
         } else {
-            visualiseMove(move, isEnPassant);
+            visualiseMove(move, status);
             return true;
         }
     }
 
     // Update the internal board state to reflect the input move
-    private static void doMove(final Move move, final boolean isEnPassant) {
+    private static void doMove(final Move move, final MoveStatus status) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
 
         // Check if move is en passant
-        if (isEnPassant) {
+        if (status == MoveStatus.EN_PASSANT) {
+            // Remove the en passanted pawn
             int row = move.getStartRow();
             int column = move.getEndColumn();
 
             board.removePiece(new Coordinate(row, column));
+        } else if (status == MoveStatus.CASTLE) {
+            // Move the castling rook
+            int columnDiff = move.getEndColumn() - move.getStartColumn();
+            Coordinate rookCoordinate;
+            int columnModifier;
+            if (columnDiff == 2) {
+                rookCoordinate = new Coordinate(move.getStartRow(), board.getBoardSize() - 1);
+                columnModifier = -1;
+            } else {
+                rookCoordinate = new Coordinate(move.getStartRow(), 0);
+                columnModifier = 1;
+            }
+            Piece rook = board.getPiece(rookCoordinate);
+            board.removePiece(rookCoordinate);
+
+            board.setPiece(rook, new Coordinate(move.getStartRow(), move.getEndColumn() + columnModifier));
         }
 
         // Update piece positions on board
         board.removePiece(move.getStartCoordinate());
         board.setPiece(movingPiece, move.getEndCoordinate());
 
-        if (movingPiece.getName() == PieceName.PAWN) {
-            ((Pawn) movingPiece).setMoved();
-        } else if (movingPiece.getName() == PieceName.KING) {
+        PieceName pieceName = movingPiece.getName();
+
+        // Keep track of whether kings, rooks and pawns have moved
+        movingPiece.setHasMoved();
+        if (pieceName == PieceName.KING) {
             // Update king position
             if (movingPiece.isWhite()) {
                 whiteKingPos = move.getEndCoordinate();
@@ -115,7 +124,7 @@ public class GameEngine {
     }
 
     // Update the GUI to show the result of a move
-    private static void visualiseMove(final Move move, final boolean isEnPassant) {
+    private static void visualiseMove(final Move move, final MoveStatus status) {
         Coordinate startCoordinate = move.getStartCoordinate();
         Coordinate endCoordinate = move.getEndCoordinate();
 
@@ -124,7 +133,8 @@ public class GameEngine {
         BoardVisualiser.updateButtonIcon(board.getPiece(endCoordinate).getIcon(),
                 endCoordinate);
 
-        if (isEnPassant) {
+        // TODO: The change to internal and external board states could be more closely tied together?
+        if (status == MoveStatus.EN_PASSANT) {
             int row = startCoordinate.getRow();
             int column = endCoordinate.getColumn();
             System.out.println(row);
@@ -133,6 +143,24 @@ public class GameEngine {
             Coordinate enPassantCoordinate = new Coordinate(row, column);
 
             BoardVisualiser.updateButtonIcon(board.getPiece(enPassantCoordinate).getIcon(), enPassantCoordinate);
+        } else if (status == MoveStatus.CASTLE) {
+            // TODO: Duplicate code with doMove method
+            int columnDiff = move.getEndColumn() - move.getStartColumn();
+            Coordinate rookCoordinate;
+            int columnModifier;
+            if (columnDiff == 2) {
+                rookCoordinate = new Coordinate(move.getStartRow(), board.getBoardSize() - 1);
+                columnModifier = -1;
+            } else {
+                rookCoordinate = new Coordinate(move.getStartRow(), 0);
+                columnModifier = 1;
+            }
+
+            Coordinate endRookCoordinate = new Coordinate(move.getStartRow(), move.getEndColumn()
+                    + columnModifier);
+
+            BoardVisualiser.updateButtonIcon(board.getPiece(rookCoordinate).getIcon(), rookCoordinate);
+            BoardVisualiser.updateButtonIcon(board.getPiece(endRookCoordinate).getIcon(), endRookCoordinate);
         }
     }
 
@@ -144,7 +172,7 @@ public class GameEngine {
         return whiteKingPos;
     }
 
-    private static boolean isInCheckmate() {
+    private static boolean isCheckmate() {
         return false;
     }
 
@@ -164,7 +192,7 @@ public class GameEngine {
     }
 
     // Check if any pieces of the specified colour threaten the input coordinate
-    private static ThreatStatus isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
+    protected static ThreatStatus isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
         int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
 

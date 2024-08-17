@@ -1,5 +1,7 @@
 package board;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pieces.*;
 import utility.Coordinate;
 
@@ -9,6 +11,7 @@ import static pieces.Piece.Colour;
 
 public class Board {
     private static final int BOARD_SIZE = 8;
+    private static final Logger logger = LogManager.getLogger(Board.class);
     private Piece[][] board;
 
     public Board() {
@@ -49,6 +52,11 @@ public class Board {
         int row = coordinates.getRow();
         int column = coordinates.getColumn();
         board[row][column] = piece;
+        if (piece == null) {
+            logger.debug("Removed piece at coordinates {}", coordinates);
+        } else {
+            logger.debug("Set {} at coordinates {}", piece.getName(), coordinates);
+        }
     }
 
     public void removePiece(final Coordinate coordinates) {

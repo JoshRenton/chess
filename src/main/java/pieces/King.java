@@ -3,10 +3,8 @@ package pieces;
 import utility.Move;
 
 public class King extends Piece {
-    boolean hasMoved;
     public King(Colour colour) {
         super(colour);
-        hasMoved = true;
     }
 
     public boolean canMove(Move move) {
@@ -14,10 +12,6 @@ public class King extends Piece {
         int columnDiff = move.getStartColumn() - move.getEndColumn();
 
         return Math.abs(rowDiff) <= 1 && Math.abs(columnDiff) <= 1;
-    }
-
-    public void setMoved() {
-        hasMoved = true;
     }
 
     public PieceName getName() {

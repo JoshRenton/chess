@@ -8,10 +8,13 @@ import javax.swing.*;
 public abstract class Piece {
     private final Colour colour;
     private final ImageIcon icon;
+    // This is not needed by every piece but prevents needing to unnecessarily type-cast
+    private boolean hasMoved;
 
     public Piece(Colour colour) {
         this.colour = colour;
         icon = Icons.loadIcon(this.getIconName());
+        this.hasMoved = false;
     }
 
     public boolean isWhite() {
@@ -36,6 +39,14 @@ public abstract class Piece {
 
     public Colour getColour() {
         return colour;
+    }
+
+    public void setHasMoved() {
+        hasMoved = true;
+    }
+
+    public  boolean getHasMoved() {
+        return hasMoved;
     }
 
     public enum PieceName {
