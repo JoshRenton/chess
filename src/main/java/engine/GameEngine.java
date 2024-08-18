@@ -64,21 +64,22 @@ public class GameEngine {
     // Performs a move if it does not result in the turn player being in check
     // Returns whether the move is completed or not
     private static boolean attemptMove(final Move move, final MoveStatus status) {
-        doMove(move, status);
+        ArrayList<Coordinate> updateCoordinates = doMove(move, status);
         // Check if turn player is in check after move
         if (isInCheck()) {
             // Undo move
             board = previousBoardState;
             return false;
         } else {
-            visualiseMove(move, status);
+            visualiseMove(updateCoordinates);
             return true;
         }
     }
 
     // Update the internal board state to reflect the input move
-    private static void doMove(final Move move, final MoveStatus status) {
+    private static ArrayList<Coordinate> doMove(final Move move, final MoveStatus status) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
+        ArrayList<Coordinate> updatedCoordinates = new ArrayList<>();
 
         // Check if move is en passant
         if (status == MoveStatus.EN_PASSANT) {
@@ -86,7 +87,10 @@ public class GameEngine {
             int row = move.getStartRow();
             int column = move.getEndColumn();
 
-            board.removePiece(new Coordinate(row, column));
+            Coordinate removeCoordinate = new Coordinate(row, column);
+
+            board.removePiece(removeCoordinate);
+            updatedCoordinates.add(removeCoordinate);
         } else if (status == MoveStatus.CASTLE) {
             // Move the castling rook
             int columnDiff = move.getEndColumn() - move.getStartColumn();
@@ -101,13 +105,19 @@ public class GameEngine {
             }
             Piece rook = board.getPiece(rookCoordinate);
             board.removePiece(rookCoordinate);
+            updatedCoordinates.add(rookCoordinate);
 
-            board.setPiece(rook, new Coordinate(move.getStartRow(), move.getEndColumn() + columnModifier));
+            Coordinate updatedRookCoordinate = new Coordinate(move.getStartRow(),
+                    move.getEndColumn() + columnModifier);
+            board.setPiece(rook, updatedRookCoordinate);
+            updatedCoordinates.add(updatedRookCoordinate);
         }
 
         // Update piece positions on board
         board.removePiece(move.getStartCoordinate());
+        updatedCoordinates.add(move.getStartCoordinate());
         board.setPiece(movingPiece, move.getEndCoordinate());
+        updatedCoordinates.add(move.getEndCoordinate());
 
         PieceName pieceName = movingPiece.getName();
 
@@ -121,46 +131,14 @@ public class GameEngine {
                 blackKingPos = move.getEndCoordinate();
             }
         }
+
+        return updatedCoordinates;
     }
 
     // Update the GUI to show the result of a move
-    private static void visualiseMove(final Move move, final MoveStatus status) {
-        Coordinate startCoordinate = move.getStartCoordinate();
-        Coordinate endCoordinate = move.getEndCoordinate();
-
-        BoardVisualiser.updateButtonIcon(board.getPiece(startCoordinate).getIcon(),
-                startCoordinate);
-        BoardVisualiser.updateButtonIcon(board.getPiece(endCoordinate).getIcon(),
-                endCoordinate);
-
-        // TODO: The change to internal and external board states could be more closely tied together?
-        if (status == MoveStatus.EN_PASSANT) {
-            int row = startCoordinate.getRow();
-            int column = endCoordinate.getColumn();
-            System.out.println(row);
-            System.out.println(column);
-
-            Coordinate enPassantCoordinate = new Coordinate(row, column);
-
-            BoardVisualiser.updateButtonIcon(board.getPiece(enPassantCoordinate).getIcon(), enPassantCoordinate);
-        } else if (status == MoveStatus.CASTLE) {
-            // TODO: Duplicate code with doMove method
-            int columnDiff = move.getEndColumn() - move.getStartColumn();
-            Coordinate rookCoordinate;
-            int columnModifier;
-            if (columnDiff == 2) {
-                rookCoordinate = new Coordinate(move.getStartRow(), board.getBoardSize() - 1);
-                columnModifier = -1;
-            } else {
-                rookCoordinate = new Coordinate(move.getStartRow(), 0);
-                columnModifier = 1;
-            }
-
-            Coordinate endRookCoordinate = new Coordinate(move.getStartRow(), move.getEndColumn()
-                    + columnModifier);
-
-            BoardVisualiser.updateButtonIcon(board.getPiece(rookCoordinate).getIcon(), rookCoordinate);
-            BoardVisualiser.updateButtonIcon(board.getPiece(endRookCoordinate).getIcon(), endRookCoordinate);
+    private static void visualiseMove(ArrayList<Coordinate> updateCoordinates) {
+        for (Coordinate coordinate: updateCoordinates) {
+            BoardVisualiser.updateButtonIcon(board.getPiece(coordinate).getIcon(), coordinate);
         }
     }
 
