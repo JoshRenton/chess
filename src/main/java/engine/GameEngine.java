@@ -154,7 +154,7 @@ public class GameEngine {
         return false;
     }
 
-    private static boolean isInCheck() {
+    protected static boolean isInCheck() {
         Coordinate kingPos;
         boolean whiteThreatening;
 
@@ -253,12 +253,14 @@ public class GameEngine {
                     pieceSelected = false;
                 } else {
                     startCoordinate = coordinate;
-                    logger.debug("Currently selected {} at {}", board.getPiece(coordinate).getName(), coordinate);
+                    logger.debug("Currently selected {} at {}",
+                            board.getPiece(coordinate).getName(), coordinate);
                 }
 
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
-            } else if (currentSelectedPiece.isWhite() == isWhiteTurn()){
+            } else if (currentSelectedPiece.isWhite() == isWhiteTurn() &&
+                    currentSelectedPiece.getName() != PieceName.EMPTY){
                 startCoordinate = coordinate;
                 pieceSelected = true;
                 logger.debug("Currently selected {} at {}", board.getPiece(coordinate).getName(), coordinate);

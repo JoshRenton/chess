@@ -1,15 +1,17 @@
 package engine;
 
 import board.Board;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pieces.Piece;
 import utility.Coordinate;
 import utility.Move;
 
-import static engine.GameEngine.isWhiteTurn;
-import static engine.GameEngine.isSquareThreatened;
+import static engine.GameEngine.*;
 import static pieces.Piece.PieceName;
 
 public final class MoveValidator {
+    private static final Logger logger = LogManager.getLogger(MoveValidator.class);
 
     private MoveValidator() {}
 
@@ -101,8 +103,8 @@ public final class MoveValidator {
 
         // Check king is moving 2 spaces left or right and not moving across rows
         if (Math.abs(columnDiff) == 2 && rowDiff == 0) {
-            // Check king has not previously moved
-            if (!board.getPiece(startCoordinate).getHasMoved()) {
+            // Check king has not previously moved and is not in check
+            if (!board.getPiece(startCoordinate).getHasMoved() && !isInCheck()) {
                 Coordinate rookCoordinate;
                 if (direction == 1) {
                     rookCoordinate = new Coordinate(startCoordinate.getRow(), board.getBoardSize() - 1);
@@ -116,12 +118,10 @@ public final class MoveValidator {
                         For each square from the king to the rook (including the king), check that it is unoccupied
                         and not threatened by any opposing piece
                      */
-                    for (int column = startCoordinate.getColumn(); column < board.getBoardSize() - 1 && column > 0;
+                    for (int column = startCoordinate.getColumn() + direction; column < board.getBoardSize() - 1 && column > 0;
                          column += direction) {
                         Coordinate checkCoordinate = new Coordinate(startCoordinate.getRow(), column);
-                        // TODO: Should ideally be checking if the king is in check before moving when I get to that
-                        // TODO: The "in check" check is currently not working
-                        if ((!board.isOccupied(checkCoordinate) || column == startCoordinate.getColumn()) &&
+                        if (!board.isOccupied(checkCoordinate) &&
                                 !isSquareThreatened(checkCoordinate, !isWhiteTurn()).isThreatened()) {
                             return true;
                         }
