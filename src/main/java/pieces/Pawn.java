@@ -16,12 +16,12 @@ public class Pawn extends Piece{
         if (columnDiff == 0 && rowDiff == 1 && isWhite()) {
             return true;
             // First pawn move can be two squares
-        } else if (columnDiff == 0 && rowDiff == 2 && isWhite() && !super.getHasMoved()) {
+        } else if (columnDiff == 0 && rowDiff == 2 && isWhite() && super.hasNotMoved()) {
             return true;
         } else if (columnDiff == 0 && rowDiff == -1 && !isWhite()) {
             return true;
         } else
-            return columnDiff == 0 && rowDiff == -2 && !isWhite() && !super.getHasMoved();
+            return columnDiff == 0 && rowDiff == -2 && !isWhite() && super.hasNotMoved();
     }
 
     public PieceName getName() {

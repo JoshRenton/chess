@@ -104,7 +104,7 @@ public final class MoveValidator {
         // Check king is moving 2 spaces left or right and not moving across rows
         if (Math.abs(columnDiff) == 2 && rowDiff == 0) {
             // Check king has not previously moved and is not in check
-            if (!board.getPiece(startCoordinate).getHasMoved() && !isInCheck()) {
+            if (board.getPiece(startCoordinate).hasNotMoved() && !isInCheck()) {
                 Coordinate rookCoordinate;
                 if (direction == 1) {
                     rookCoordinate = new Coordinate(startCoordinate.getRow(), board.getBoardSize() - 1);
@@ -113,7 +113,7 @@ public final class MoveValidator {
                 }
                 Piece potentialRook = board.getPiece(rookCoordinate);
                 // Check that there is a rook in castling direction that has not moved
-                if (potentialRook.getName() == PieceName.ROOK && !potentialRook.getHasMoved()) {
+                if (potentialRook.getName() == PieceName.ROOK && potentialRook.hasNotMoved()) {
                     /*
                         For each square from the king to the rook (including the king), check that it is unoccupied
                         and not threatened by any opposing piece

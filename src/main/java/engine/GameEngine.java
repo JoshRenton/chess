@@ -89,6 +89,8 @@ public class GameEngine {
 
             Coordinate removeCoordinate = new Coordinate(row, column);
 
+            // TODO: The action of removing a piece and adding the coordinate should be bundled together in a method
+            // Same for setting a piece
             board.removePiece(removeCoordinate);
             updatedCoordinates.add(removeCoordinate);
         } else if (status == MoveStatus.CASTLE) {
@@ -150,8 +152,22 @@ public class GameEngine {
         return whiteKingPos;
     }
 
+    /*
+        TODO: Need to think about implementing the king not being able to capture a piece that is protected
+        For a player to be in checkmate, the following conditions must all be met:
+
+        1. The king must be in check
+        2. The king has no legal moves - every square surrounding the king is either threatened or occupied by
+           a piece of the same colour
+        3. There is no piece that can capture the checking piece
+        4. There is no piece that can move between the checking piece and the king to block the check
+     */
     private static boolean isCheckmate() {
         return false;
+    }
+
+    private static boolean kingHasLegalMove() {
+        return true;
     }
 
     protected static boolean isInCheck() {
@@ -260,7 +276,7 @@ public class GameEngine {
                 // This prevents a click on a square with no piece from beginning a move, and a click on a piece that
                 // is not of the turn player's colour
             } else if (currentSelectedPiece.isWhite() == isWhiteTurn() &&
-                    currentSelectedPiece.getName() != PieceName.EMPTY){
+                    currentSelectedPiece.getName() != PieceName.EMPTY) {
                 startCoordinate = coordinate;
                 pieceSelected = true;
                 logger.debug("Currently selected {} at {}", board.getPiece(coordinate).getName(), coordinate);

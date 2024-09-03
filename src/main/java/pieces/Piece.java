@@ -45,8 +45,8 @@ public abstract class Piece {
         hasMoved = true;
     }
 
-    public  boolean getHasMoved() {
-        return hasMoved;
+    public boolean hasNotMoved() {
+        return !hasMoved;
     }
 
     public enum PieceName {
