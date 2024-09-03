@@ -167,6 +167,20 @@ public class GameEngine {
     }
 
     private static boolean kingHasLegalMove() {
+        int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        Coordinate opposingKingPos;
+
+        if (isWhiteTurn) {
+            opposingKingPos = whiteKingPos;
+        } else {
+            opposingKingPos = blackKingPos;
+        }
+
+        for (int[] step: steps) {
+            int possibleRow = opposingKingPos.getRow() + step[0];
+            int possibleColumn = opposingKingPos.getColumn() + step[1];
+
+        }
         return true;
     }
 
