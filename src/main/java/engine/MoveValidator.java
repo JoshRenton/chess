@@ -44,6 +44,7 @@ public final class MoveValidator {
                     return MoveStatus.CASTLE;
                 }
         } else if (piece.canMove(move)) {
+            // Need to add a check for the king to not be able to move into check here
             if (endPiece.getName() == PieceName.EMPTY || isOppositeColourPiece(piece, endPiece)) {
                 // Knights can ignore obstructions
                 if (piece.getName() == PieceName.KNIGHT) {
@@ -104,7 +105,7 @@ public final class MoveValidator {
         // Check king is moving 2 spaces left or right and not moving across rows
         if (Math.abs(columnDiff) == 2 && rowDiff == 0) {
             // Check king has not previously moved and is not in check
-            if (board.getPiece(startCoordinate).hasNotMoved() && !isInCheck()) {
+            if (board.getPiece(startCoordinate).hasNotMoved() && !getCheckStatus(true).isThreatened()) {
                 Coordinate rookCoordinate;
                 if (direction == 1) {
                     rookCoordinate = new Coordinate(startCoordinate.getRow(), board.getBoardSize() - 1);
@@ -139,8 +140,8 @@ public final class MoveValidator {
         int rowDirection = endCoordinate.getRow() - startCoordinate.getRow();
         int columnDirection = endCoordinate.getColumn() - startCoordinate.getColumn();
 
-        rowDirection = normalizeDirection(rowDirection);
-        columnDirection = normalizeDirection(columnDirection);
+        rowDirection = GameEngine.normalizeDirection(rowDirection);
+        columnDirection = GameEngine.normalizeDirection(columnDirection);
 
         int row = startCoordinate.getRow() + rowDirection;
         int column = startCoordinate.getColumn() + columnDirection;
@@ -154,16 +155,6 @@ public final class MoveValidator {
         }
 
         return true;
-    }
-
-    private static int normalizeDirection(int direction) {
-        if (direction < 0) {
-            direction = -1;
-        } else if (direction > 0){
-            direction = 1;
-        }
-
-        return direction;
     }
 
     private static boolean isOppositeColourPiece(final Piece piece, final Piece endPiece) {

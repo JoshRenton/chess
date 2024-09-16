@@ -13,10 +13,11 @@ public class Board {
     private static final int BOARD_SIZE = 8;
     private static final Logger logger = LogManager.getLogger(Board.class);
     private Piece[][] board;
+    private Coordinate whiteKingPos;
+    private Coordinate blackKingPos;
 
     public Board() {
         initialiseBoard();
-        setupBoard();
     }
 
     // Creates a new board using the board state of the input board
@@ -31,11 +32,19 @@ public class Board {
         }
     }
 
+    public Coordinate getBlackKingPos() {
+        return blackKingPos;
+    }
+
+    public Coordinate getWhiteKingPos() {
+        return whiteKingPos;
+    }
+
     private void initialiseBoard() {
         board = new Piece[8][8];
     }
 
-    private void setupBoard() {
+    public void setupClassic() {
         setupPawns();
         setupBackRow();
     }
@@ -48,14 +57,23 @@ public class Board {
         return BOARD_SIZE;
     }
 
-    public void setPiece(final Piece piece, final Coordinate coordinates) {
-        int row = coordinates.getRow();
-        int column = coordinates.getColumn();
+    public void setPiece(final Piece piece, final Coordinate coordinate) {
+        int row = coordinate.getRow();
+        int column = coordinate.getColumn();
         board[row][column] = piece;
         if (piece == null) {
-            logger.debug("Removed piece at coordinates {}", coordinates);
+            logger.debug("Removed piece at coordinates {}", coordinate);
         } else {
-            logger.debug("Set {} at coordinates {}", piece.getName(), coordinates);
+            logger.debug("Set {} at coordinates {}", piece.getName(), coordinate);
+
+            // Update king position
+            if (piece.getName() == Piece.PieceName.KING) {
+                if (piece.getColour() == Colour.WHITE) {
+                    whiteKingPos = coordinate;
+                } else {
+                    blackKingPos = coordinate;
+                }
+            }
         }
     }
 

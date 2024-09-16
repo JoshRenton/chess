@@ -21,6 +21,10 @@ public class ThreatStatus {
         this.threateningCoordinates = new Coordinate[]{threateningCoordinate};
     }
 
+    public boolean isDoubleCheck() {
+        return threateningCoordinates.length == 2;
+    }
+
     public Coordinate[] getThreateningCoordinates() {
         return threateningCoordinates;
     }

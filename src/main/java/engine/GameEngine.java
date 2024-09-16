@@ -3,8 +3,10 @@ package engine;
 import board.Board;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pieces.King;
 import pieces.Piece;
 import pieces.Piece.PieceName;
+import pieces.Rook;
 import utility.Coordinate;
 import utility.Move;
 import utility.Square;
@@ -14,8 +16,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static engine.MoveValidator.MoveStatus;
-import static engine.MoveValidator.isValid;
+import static engine.MoveValidator.*;
 
 public class GameEngine {
     private static Board board;
@@ -24,15 +25,18 @@ public class GameEngine {
     private static boolean isWhiteTurn = true;
     private static Coordinate startCoordinate;
     private static boolean pieceSelected = false;
-    private static Coordinate blackKingPos;
-    private static Coordinate whiteKingPos;
     private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
+    // TODO: Promotion
+    // TODO: Stalemate
+
     public static void main(String[] args) {
-        // TODO: Consider having a board method to get king positions instead of hard-coding
-        whiteKingPos = new Coordinate(0, 4);
-        blackKingPos = new Coordinate(7, 4);
         board = new Board();
+        // board.setupClassic();
+        board.setPiece(new King(Piece.Colour.BLACK), new Coordinate(0, 5));
+        board.setPiece(new King(Piece.Colour.WHITE), new Coordinate(2, 5));
+        board.setPiece(new Rook(Piece.Colour.WHITE), new Coordinate(1, 2));
+
         BoardVisualiser.initialise(board);
         BoardVisualiser.showWindow();
     }
@@ -54,6 +58,12 @@ public class GameEngine {
         if (status != MoveStatus.INVALID) {
             moveSuccessful = attemptMove(move, status);
 
+            // Check if player is in checkmate BEFORE changing turn
+            if (isCheckmate()) {
+                // TODO: Purely for testing
+                System.exit(0);
+            }
+
             // Swap player turn only if move was successful
             if (moveSuccessful) {
                 isWhiteTurn = !isWhiteTurn;
@@ -66,7 +76,7 @@ public class GameEngine {
     private static boolean attemptMove(final Move move, final MoveStatus status) {
         ArrayList<Coordinate> updateCoordinates = doMove(move, status);
         // Check if turn player is in check after move
-        if (isInCheck()) {
+        if (getCheckStatus(true).isThreatened()) {
             // Undo move
             board = previousBoardState;
             return false;
@@ -90,7 +100,7 @@ public class GameEngine {
             Coordinate removeCoordinate = new Coordinate(row, column);
 
             // TODO: The action of removing a piece and adding the coordinate should be bundled together in a method
-            // Same for setting a piece
+            // TODO: Same for setting a piece
             board.removePiece(removeCoordinate);
             updatedCoordinates.add(removeCoordinate);
         } else if (status == MoveStatus.CASTLE) {
@@ -125,14 +135,6 @@ public class GameEngine {
 
         // Keep track of whether kings, rooks and pawns have moved
         movingPiece.setHasMoved();
-        if (pieceName == PieceName.KING) {
-            // Update king position
-            if (movingPiece.isWhite()) {
-                whiteKingPos = move.getEndCoordinate();
-            } else {
-                blackKingPos = move.getEndCoordinate();
-            }
-        }
 
         return updatedCoordinates;
     }
@@ -142,14 +144,6 @@ public class GameEngine {
         for (Coordinate coordinate: updateCoordinates) {
             BoardVisualiser.updateButtonIcon(board.getPiece(coordinate).getIcon(), coordinate);
         }
-    }
-
-    public Coordinate getBlackKingPos() {
-        return blackKingPos;
-    }
-
-    public Coordinate getWhiteKingPos() {
-        return whiteKingPos;
     }
 
     /*
@@ -163,40 +157,89 @@ public class GameEngine {
         4. There is no piece that can move between the checking piece and the king to block the check
      */
     private static boolean isCheckmate() {
+        // TODO: Backrank mate with rook and king doesn't work
+        // Get threat status on opposing king
+        ThreatStatus opposingKingThreatStatus = getCheckStatus(false);
+
+        // If it is a double check, only need to see if king has a legal move
+        if (opposingKingThreatStatus.isDoubleCheck()) {
+            return !opposingKingHasLegalMove();
+        }
+
+        // 1
+        if (opposingKingThreatStatus.isThreatened()) {
+            // 2
+            if (!opposingKingHasLegalMove()) {
+                // 3
+                Coordinate checkingPiecePos = opposingKingThreatStatus.getThreateningCoordinates()[0];
+                if (!isSquareThreatened(checkingPiecePos, !isWhiteTurn).isThreatened()) {
+                    // 4 - Knights and pawns skip this step
+                    // TODO: Code below is almost identical to MoveValidator.pathIsUnobstructed so consider merging
+                    // TODO: Maybe don't call getOpposingKingPos over and over again
+                    int rowDirection = checkingPiecePos.getRow() - getOpposingKingPos().getRow();
+                    int columnDirection = checkingPiecePos.getColumn() - getOpposingKingPos().getColumn();
+
+                    rowDirection = normalizeDirection(rowDirection);
+                    columnDirection = normalizeDirection(columnDirection);
+
+                    int row = getOpposingKingPos().getRow() + rowDirection;
+                    int column = getOpposingKingPos().getColumn() + columnDirection;
+
+                    while (row != checkingPiecePos.getRow() || column != checkingPiecePos.getColumn()) {
+                        // TODO: Reading out the following line does not make any sense
+                        // TODO: This currently is always true because the king is counted as threatening the square
+                        ThreatStatus threatStatus = isSquareThreatened(new Coordinate(row, column), !isWhiteTurn);
+                        if (threatStatus.isThreatened() &&
+                                !threatStatus.getThreateningCoordinates()[0].equals(getOpposingKingPos())) {
+                            return false;
+                        }
+                        row += rowDirection;
+                        column += columnDirection;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
-    private static boolean kingHasLegalMove() {
+    private static boolean opposingKingHasLegalMove() {
         int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         Coordinate opposingKingPos;
 
-        if (isWhiteTurn) {
-            opposingKingPos = whiteKingPos;
-        } else {
-            opposingKingPos = blackKingPos;
-        }
+        opposingKingPos = getOpposingKingPos();
 
         for (int[] step: steps) {
             int possibleRow = opposingKingPos.getRow() + step[0];
             int possibleColumn = opposingKingPos.getColumn() + step[1];
 
+            Coordinate possibleKingCoordinate = new Coordinate(possibleRow, possibleColumn);
+            if (possibleKingCoordinate.isValid()) {
+                Move possibleMove = new Move(opposingKingPos, possibleKingCoordinate);
+                if (!isSquareThreatened(possibleKingCoordinate, isWhiteTurn()).isThreatened() &&
+                        MoveValidator.isValid(board, possibleMove) == MoveStatus.VALID) {
+                    return true;
+                }
+            }
         }
-        return true;
+        return false;
     }
 
-    protected static boolean isInCheck() {
+    // TODO: King can put itself in check by a pawn (BUG)
+    protected static ThreatStatus getCheckStatus(boolean turnPlayer) {
         Coordinate kingPos;
         boolean whiteThreatening;
 
-        if (isWhiteTurn) {
-            kingPos = whiteKingPos;
-            whiteThreatening = false;
+        whiteThreatening = isWhiteTurn() ^ turnPlayer;
+        if (whiteThreatening) {
+            kingPos = board.getBlackKingPos();
         } else {
-            kingPos = blackKingPos;
-            whiteThreatening = true;
+            kingPos = board.getWhiteKingPos();
         }
 
-        return isSquareThreatened(kingPos, whiteThreatening).isThreatened();
+        return isSquareThreatened(kingPos, whiteThreatening);
     }
 
     // Check if any pieces of the specified colour threaten the input coordinate
@@ -266,6 +309,24 @@ public class GameEngine {
         }
 
         return new ThreatStatus(false);
+    }
+
+    public static int normalizeDirection(int direction) {
+        if (direction < 0) {
+            direction = -1;
+        } else if (direction > 0){
+            direction = 1;
+        }
+
+        return direction;
+    }
+
+    public static Coordinate getOpposingKingPos() {
+        if (isWhiteTurn) {
+            return board.getBlackKingPos();
+        } else {
+            return board.getWhiteKingPos();
+        }
     }
 
     // Listens for interaction with a square
