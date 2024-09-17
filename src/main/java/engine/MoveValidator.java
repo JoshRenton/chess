@@ -93,7 +93,7 @@ public final class MoveValidator {
         Is a valid castle iff there are no pieces on squares between the king and rook,
         none of those squares are threatened,
         the king is not in check,
-        neither the king or rook has moved,
+        neither the king nor rook has moved,
         the king is moving 2 squares toward the rook
      */
     private static boolean isValidCastle(final Board board, final Coordinate startCoordinate,
@@ -123,7 +123,7 @@ public final class MoveValidator {
                          column += direction) {
                         Coordinate checkCoordinate = new Coordinate(startCoordinate.getRow(), column);
                         if (!board.isOccupied(checkCoordinate) &&
-                                !isSquareThreatened(checkCoordinate, !isWhiteTurn()).isThreatened()) {
+                                !isSquareThreatened(board, checkCoordinate, !isWhiteTurn()).isThreatened()) {
                             return true;
                         }
                     }

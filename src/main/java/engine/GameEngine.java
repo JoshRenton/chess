@@ -74,7 +74,7 @@ public class GameEngine {
     // Performs a move if it does not result in the turn player being in check
     // Returns whether the move is completed or not
     private static boolean attemptMove(final Move move, final MoveStatus status) {
-        ArrayList<Coordinate> updateCoordinates = doMove(move, status);
+        ArrayList<Coordinate> updateCoordinates = doMove(board, move, status);
         // Check if turn player is in check after move
         if (getCheckStatus(true).isThreatened()) {
             // Undo move
@@ -87,7 +87,7 @@ public class GameEngine {
     }
 
     // Update the internal board state to reflect the input move
-    private static ArrayList<Coordinate> doMove(final Move move, final MoveStatus status) {
+    private static ArrayList<Coordinate> doMove(Board board, final Move move, final MoveStatus status) {
         Piece movingPiece = board.getPiece(move.getStartCoordinate());
         ArrayList<Coordinate> updatedCoordinates = new ArrayList<>();
 
@@ -172,7 +172,7 @@ public class GameEngine {
             if (!opposingKingHasLegalMove()) {
                 // 3
                 Coordinate checkingPiecePos = opposingKingThreatStatus.getThreateningCoordinates()[0];
-                if (!isSquareThreatened(checkingPiecePos, !isWhiteTurn).isThreatened()) {
+                if (!isSquareThreatened(board, checkingPiecePos, !isWhiteTurn).isThreatened()) {
                     // 4 - Knights and pawns skip this step
                     // TODO: Code below is almost identical to MoveValidator.pathIsUnobstructed so consider merging
                     // TODO: Maybe don't call getOpposingKingPos over and over again
@@ -188,7 +188,7 @@ public class GameEngine {
                     while (row != checkingPiecePos.getRow() || column != checkingPiecePos.getColumn()) {
                         // TODO: Reading out the following line does not make any sense
                         // TODO: This currently is always true because the king is counted as threatening the square
-                        ThreatStatus threatStatus = isSquareThreatened(new Coordinate(row, column), !isWhiteTurn);
+                        ThreatStatus threatStatus = isSquareThreatened(board, new Coordinate(row, column), !isWhiteTurn);
                         if (threatStatus.isThreatened() &&
                                 !threatStatus.getThreateningCoordinates()[0].equals(getOpposingKingPos())) {
                             return false;
@@ -218,13 +218,24 @@ public class GameEngine {
             Coordinate possibleKingCoordinate = new Coordinate(possibleRow, possibleColumn);
             if (possibleKingCoordinate.isValid()) {
                 Move possibleMove = new Move(opposingKingPos, possibleKingCoordinate);
-                if (!isSquareThreatened(possibleKingCoordinate, isWhiteTurn()).isThreatened() &&
-                        MoveValidator.isValid(board, possibleMove) == MoveStatus.VALID) {
-                    return true;
+                MoveStatus status = MoveValidator.isValid(board, possibleMove);
+                if (status == MoveStatus.VALID) {
+                    Board simBoard = simulateMove(possibleMove, status);
+                    if (!isSquareThreatened(simBoard, possibleKingCoordinate, isWhiteTurn()).isThreatened()) {
+                        return true;
+                    }
                 }
             }
         }
+
         return false;
+    }
+
+    // Simulates a move and returns the resulting board state without altering the original board
+    private static Board simulateMove(final Move move, final MoveStatus moveStatus) {
+        Board simBoard = new Board(board);
+        doMove(simBoard, move, moveStatus);
+        return simBoard;
     }
 
     // TODO: King can put itself in check by a pawn (BUG)
@@ -239,18 +250,19 @@ public class GameEngine {
             kingPos = board.getWhiteKingPos();
         }
 
-        return isSquareThreatened(kingPos, whiteThreatening);
+        return isSquareThreatened(board, kingPos, whiteThreatening);
     }
 
     // Check if any pieces of the specified colour threaten the input coordinate
-    protected static ThreatStatus isSquareThreatened(final Coordinate coordinate, final boolean whiteThreatening) {
+    protected static ThreatStatus isSquareThreatened(final Board board, final Coordinate coordinate,
+                                                     final boolean whiteThreatening) {
         int[][] steps = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         int[][] knightSteps = {{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {-1, -2}, {-2, -1}};
 
         ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
 
         for (int[] stepDir: steps) {
-            ThreatStatus status = isDirectionThreatened(coordinate, stepDir[0], stepDir[1], whiteThreatening);
+            ThreatStatus status = isDirectionThreatened(board, coordinate, stepDir[0], stepDir[1], whiteThreatening);
             if (status.isThreatened()) {
                 coordinates.addAll(Arrays.asList(status.getThreateningCoordinates()));
             }
@@ -281,7 +293,7 @@ public class GameEngine {
         return new ThreatStatus(false);
     }
 
-    private static ThreatStatus isDirectionThreatened(final Coordinate initialCoordinate, final int rowStep,
+    private static ThreatStatus isDirectionThreatened(final Board board, final Coordinate initialCoordinate, final int rowStep,
                                                  final int columnStep, final boolean whiteThreatening) {
         final int row = initialCoordinate.getRow();
         final int column = initialCoordinate.getColumn();
