@@ -131,8 +131,6 @@ public class GameEngine {
         board.setPiece(movingPiece, move.getEndCoordinate());
         updatedCoordinates.add(move.getEndCoordinate());
 
-        PieceName pieceName = movingPiece.getName();
-
         // Keep track of whether kings, rooks and pawns have moved
         movingPiece.setHasMoved();
 
