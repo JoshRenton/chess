@@ -30,6 +30,9 @@ public class Board {
                 this.board[row][column] = boardToCopy.getBoard()[row][column];
             }
         }
+
+        this.blackKingPos = boardToCopy.getBlackKingPos();
+        this.whiteKingPos = boardToCopy.getWhiteKingPos();
     }
 
     public Coordinate getBlackKingPos() {

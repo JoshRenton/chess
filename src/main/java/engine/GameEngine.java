@@ -147,7 +147,6 @@ public class GameEngine {
     }
 
     /*
-        TODO: Need to think about implementing the king not being able to capture a piece that is protected
         For a player to be in checkmate, the following conditions must all be met:
 
         1. The king must be in check
@@ -157,7 +156,6 @@ public class GameEngine {
         4. There is no piece that can move between the checking piece and the king to block the check
      */
     private static boolean isCheckmate() {
-        // TODO: Backrank mate with rook and king doesn't work
         // Get threat status on opposing king
         ThreatStatus opposingKingThreatStatus = getCheckStatus(false);
 
@@ -187,7 +185,6 @@ public class GameEngine {
 
                     while (row != checkingPiecePos.getRow() || column != checkingPiecePos.getColumn()) {
                         // TODO: Reading out the following line does not make any sense
-                        // TODO: This currently is always true because the king is counted as threatening the square
                         ThreatStatus threatStatus = isSquareThreatened(board, new Coordinate(row, column), !isWhiteTurn);
                         if (threatStatus.isThreatened() &&
                                 !threatStatus.getThreateningCoordinates()[0].equals(getOpposingKingPos())) {
