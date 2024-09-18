@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import pieces.King;
 import pieces.Piece;
 import pieces.Piece.PieceName;
+import pieces.Queen;
 import pieces.Rook;
 import utility.Coordinate;
 import utility.Move;
@@ -32,10 +33,7 @@ public class GameEngine {
 
     public static void main(String[] args) {
         board = new Board();
-        // board.setupClassic();
-        board.setPiece(new King(Piece.Colour.BLACK), new Coordinate(0, 5));
-        board.setPiece(new King(Piece.Colour.WHITE), new Coordinate(2, 5));
-        board.setPiece(new Rook(Piece.Colour.WHITE), new Coordinate(1, 2));
+        board.setupClassic();
 
         BoardVisualiser.initialise(board);
         BoardVisualiser.showWindow();
@@ -82,6 +80,11 @@ public class GameEngine {
             return false;
         } else {
             visualiseMove(updateCoordinates);
+            if (status == MoveStatus.PROMOTION) {
+                Piece promotingPawn = board.getPiece(move.getEndCoordinate());
+                board.setPiece(new Queen(promotingPawn.getColour()), move.getEndCoordinate());
+                visualiseMove(move.getEndCoordinate());
+            }
             return true;
         }
     }
@@ -144,6 +147,13 @@ public class GameEngine {
         }
     }
 
+    // Overloads method above for simple use of single coordinates
+    private static void visualiseMove(Coordinate updateCoordinate) {
+        ArrayList<Coordinate> updateCoordinates = new ArrayList<>();
+        updateCoordinates.add(updateCoordinate);
+        visualiseMove(updateCoordinates);
+    }
+
     /*
         For a player to be in checkmate, the following conditions must all be met:
 
@@ -182,7 +192,6 @@ public class GameEngine {
                     int column = getOpposingKingPos().getColumn() + columnDirection;
 
                     while (row != checkingPiecePos.getRow() || column != checkingPiecePos.getColumn()) {
-                        // TODO: Reading out the following line does not make any sense
                         ThreatStatus threatStatus = isSquareThreatened(board, new Coordinate(row, column), !isWhiteTurn);
                         if (threatStatus.isThreatened() &&
                                 !threatStatus.getThreateningCoordinates()[0].equals(getOpposingKingPos())) {

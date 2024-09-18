@@ -28,13 +28,21 @@ public final class MoveValidator {
         if (piece.getName() == PieceName.PAWN) {
             if (piece.canMove(move)) {
                 if (isValidPawnMove(board, startCoordinate, endCoordinate)) {
-                    return MoveStatus.VALID;
+                    if (endCoordinate.getRow() == 0 || endCoordinate.getRow() == board.getBoardSize() - 1) {
+                        return MoveStatus.PROMOTION;
+                    } else {
+                        return MoveStatus.VALID;
+                    }
                 } else {
                     return MoveStatus.INVALID;
                 }
             } else {
                 if (isPawnCapture(startCoordinate, endCoordinate) && endPiece.getName() != PieceName.EMPTY) {
-                    return MoveStatus.VALID;
+                    if (endCoordinate.getRow() == 0 || endCoordinate.getRow() == board.getBoardSize() - 1) {
+                        return MoveStatus.PROMOTION;
+                    } else {
+                        return MoveStatus.VALID;
+                    }
                 } else if (isEnPassant(board, startCoordinate, endCoordinate)) {
                     return MoveStatus.EN_PASSANT;
                 }
@@ -172,6 +180,7 @@ public final class MoveValidator {
         VALID,
         INVALID,
         EN_PASSANT,
-        CASTLE
+        CASTLE,
+        PROMOTION
     }
 }
