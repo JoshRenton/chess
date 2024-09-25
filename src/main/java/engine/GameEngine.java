@@ -81,12 +81,17 @@ public class GameEngine {
         } else {
             visualiseMove(updateCoordinates);
             if (status == MoveStatus.PROMOTION) {
-                Piece promotingPawn = board.getPiece(move.getEndCoordinate());
-                board.setPiece(new Queen(promotingPawn.getColour()), move.getEndCoordinate());
-                visualiseMove(move.getEndCoordinate());
+                promote(move.getEndCoordinate());
             }
             return true;
         }
+    }
+
+    // Handles promoting a pawn
+    private static void promote(final Coordinate promotionCoordinate) {
+        Piece promotingPawn = board.getPiece(promotionCoordinate);
+        board.setPiece(new Queen(promotingPawn.getColour()), promotionCoordinate);
+        visualiseMove(promotionCoordinate);
     }
 
     // Update the internal board state to reflect the input move

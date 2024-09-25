@@ -69,16 +69,6 @@ public final class BoardVisualiser {
         square.setIcon(icon);
     }
 
-    public static void updateButtonText(String text, Coordinate coordinates) {
-        Square square = boardGui[coordinates.getRow()][coordinates.getColumn()];
-        square.setText(text);
-        if (GameEngine.isWhiteTurn()) {
-            square.setForeground(Color.RED);
-        } else {
-            square.setForeground(Color.BLUE);
-        }
-    }
-
     private static Color swapColor(Color color) {
         return color == Color.WHITE ? ALT_BLACK : Color.WHITE;
     }
