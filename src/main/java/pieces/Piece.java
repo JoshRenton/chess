@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public abstract class Piece {
     private final Colour colour;
-    private final ImageIcon icon;
+    ImageIcon icon;
     // This is not needed by every piece but prevents needing to unnecessarily type-cast
     private boolean hasMoved;
 
@@ -27,6 +27,11 @@ public abstract class Piece {
 
     public ImageIcon getIcon() {
         return this.icon;
+    }
+
+    // Only accessible to other pieces
+    void setIcon (String iconFilename) {
+        icon = Icons.loadIcon(iconFilename);
     }
 
     public String getIconName() {

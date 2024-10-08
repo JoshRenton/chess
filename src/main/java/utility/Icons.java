@@ -13,7 +13,7 @@ public class Icons {
         File file = new File(iconDir.getPath() + "/" + iconFilename);
         try {
             Image img = ImageIO.read(file);
-            // TODO: Remove hard-coded values
+            // TODO: Remove hard-coded scale values
             Image scaledImg = img.getScaledInstance(64, 64, Image.SCALE_DEFAULT);
             return new ImageIcon(scaledImg);
         } catch (IOException e) {

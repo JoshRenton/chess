@@ -28,11 +28,14 @@ public class GameEngine {
     private static Coordinate startCoordinate;
     private static boolean pieceSelected = false;
     private static final Logger logger = LogManager.getLogger(GameEngine.class);
+    private static boolean inCheck;
 
     // TODO: Promotion (to things other than a queen)
     // TODO: Stalemate
 
     public static void main(String[] args) {
+        inCheck = false;
+
         board = new Board();
         board.setupClassic();
 
@@ -51,7 +54,7 @@ public class GameEngine {
 
         previousBoardState = new Board(board);
 
-        boolean moveSuccessful = false;
+        boolean moveSuccessful;
 
         // Check move is valid before doing move
         if (status != MoveStatus.INVALID) {
@@ -65,10 +68,30 @@ public class GameEngine {
 
             // Swap player turn only if move was successful
             if (moveSuccessful) {
+                if (inCheck) {
+                    updateKingIcon(true);
+                }
+
                 isWhiteTurn = !isWhiteTurn;
+
+                if (getCheckStatus(true).isThreatened()) {
+                    updateKingIcon(false);
+                }
                 // Probably check for stalemate here (avoids checking on turn 1)
             }
         }
+    }
+
+    private static void updateKingIcon(boolean kingOkay) {
+        Coordinate kingPos = getTurnPlayerKingPos();
+        King king = (King) board.getPiece(kingPos);
+        if (kingOkay) {
+            king.isOkay();
+        } else {
+            king.isNotOkay();
+        }
+        BoardVisualiser.updateButtonIcon(king.getIcon(), kingPos);
+        inCheck = !inCheck;
     }
 
     // Performs a move if it does not result in the turn player being in check
@@ -362,6 +385,14 @@ public class GameEngine {
             return board.getBlackKingPos();
         } else {
             return board.getWhiteKingPos();
+        }
+    }
+
+    private static Coordinate getTurnPlayerKingPos() {
+        if (isWhiteTurn) {
+            return board.getWhiteKingPos();
+        } else {
+            return board.getBlackKingPos();
         }
     }
 
