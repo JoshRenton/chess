@@ -12,6 +12,7 @@ import utility.Coordinate;
 import utility.Move;
 import utility.Square;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class GameEngine {
     private static boolean pieceSelected = false;
     private static final Logger logger = LogManager.getLogger(GameEngine.class);
 
-    // TODO: Promotion
+    // TODO: Promotion (to things other than a queen)
     // TODO: Stalemate
 
     public static void main(String[] args) {
@@ -65,6 +66,7 @@ public class GameEngine {
             // Swap player turn only if move was successful
             if (moveSuccessful) {
                 isWhiteTurn = !isWhiteTurn;
+                // Probably check for stalemate here (avoids checking on turn 1)
             }
         }
     }
@@ -209,6 +211,20 @@ public class GameEngine {
                     return true;
                 }
             }
+        }
+
+        return false;
+    }
+
+    /*
+        For a position to be stalemate, 2 conditions must be satisfied simultaneously:
+        1. The turn player is not in check
+        2. The turn player has no legal moves
+     */
+    private static boolean isStalemate() {
+        if (!getCheckStatus(true).isThreatened()) {
+            // Need a way to get all possible squares a piece can move to
+            // Only need to check one square around piece (not knights obviously)
         }
 
         return false;
