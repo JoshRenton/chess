@@ -263,7 +263,6 @@ public class GameEngine {
         return simBoard;
     }
 
-    // TODO: King can put itself in check by a pawn (BUG)
     protected static ThreatStatus getCheckStatus(boolean turnPlayer) {
         Coordinate kingPos;
         boolean whiteThreatening;

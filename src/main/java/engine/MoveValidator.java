@@ -28,6 +28,8 @@ public final class MoveValidator {
         if (piece.getName() == PieceName.PAWN) {
             if (piece.canMove(move)) {
                 if (isValidPawnMove(board, startCoordinate, endCoordinate)) {
+                    // Check if pawn is moving on to the last row and promoting
+                    // TODO: Repeated promotion code below should be moved into its own function
                     if (endCoordinate.getRow() == 0 || endCoordinate.getRow() == board.getBoardSize() - 1) {
                         return MoveStatus.PROMOTION;
                     } else {
@@ -37,7 +39,8 @@ public final class MoveValidator {
                     return MoveStatus.INVALID;
                 }
             } else {
-                if (isPawnCapture(startCoordinate, endCoordinate) && endPiece.getName() != PieceName.EMPTY) {
+                // Check if move is a valid pawn capture
+                if (isPawnCapture(piece.getColour(), startCoordinate, endCoordinate) && endPiece.getName() != PieceName.EMPTY) {
                     if (endCoordinate.getRow() == 0 || endCoordinate.getRow() == board.getBoardSize() - 1) {
                         return MoveStatus.PROMOTION;
                     } else {
@@ -47,6 +50,7 @@ public final class MoveValidator {
                     return MoveStatus.EN_PASSANT;
                 }
             }
+            // Check if move is a valid castle
         } else if (piece.getName() == PieceName.KING && !piece.canMove(move)) {
                 if (isValidCastle(board, startCoordinate, endCoordinate)) {
                     return MoveStatus.CASTLE;
@@ -74,11 +78,11 @@ public final class MoveValidator {
     }
 
     // Returns whether the attempted move is a valid pawn capture
-    private static boolean isPawnCapture(final Coordinate startCoordinate, final Coordinate endCoordinate) {
-        if (isWhiteTurn() && ((endCoordinate.getRow() - startCoordinate.getRow()) == 1) &&
+    private static boolean isPawnCapture(Piece.Colour pieceColour, final Coordinate startCoordinate, final Coordinate endCoordinate) {
+        if (pieceColour == Piece.Colour.WHITE && ((endCoordinate.getRow() - startCoordinate.getRow()) == 1) &&
                 (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1)) {
             return true;
-        } else return !isWhiteTurn() && ((endCoordinate.getRow() - startCoordinate.getRow()) == -1) &&
+        } else return pieceColour == Piece.Colour.BLACK && ((endCoordinate.getRow() - startCoordinate.getRow()) == -1) &&
                 (Math.abs(endCoordinate.getColumn() - startCoordinate.getColumn()) == 1);
     }
 
